@@ -1,0 +1,13 @@
+
+/* Apply the styles */
+.edit-card {
+    box-shadow: 8px 8px 0 var(--purp);
+    
+    
+  }
+  
+ 
+  
+  .edit-card-testimony {
+    box-shadow: 8px 8px 0 var(--coral);
+  }

@@ -1,0 +1,37 @@
+
+
+/* Apply the styles */
+.card {
+  box-shadow: 8px 8px 0 var(--purp);
+  /* Fixed shadow */
+  transition: transform 0.2s ease;
+  /* Smooth transition */
+  cursor: pointer;
+  transform-style: preserve-3d;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  
+}
+
+.card:hover {
+  transform: scale(1.05);
+}
+
+.card-testimony {
+  box-shadow: 8px 8px 0 var(--coral);
+  /* Fixed shadow */
+  transition: transform 0.2s ease;
+  /* Smooth transition */
+  cursor: pointer;
+  transform-style: preserve-3d;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.card-testimony:hover {
+  transform: scale(1.05);
+}
+
+

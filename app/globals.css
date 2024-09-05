@@ -1,0 +1,62 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+  --blk1: rgba(27, 32, 40, 1);
+  --purp: rgba(126, 81, 255, 1);
+  --gren: rgba(184, 255, 0, 1);
+  --wht1: rgba(255, 255, 255, 1);
+  --coral: rgba(255, 127, 80, 1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  scroll-behavior: smooth;
+  background: linear-gradient(to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))) rgb(var(--background-start-rgb));
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+@font-face {
+  font-family: 'Maison';
+  src: url('/fonts/Maison_Neue_Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: bold;
+}
+
+@font-face {
+  font-family: 'Maison';
+  src: url('/fonts/Maison_Neue_Book.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Maison';
+  src: url('/fonts/Maison_Neue_Light.ttf') format('truetype');
+  font-weight: 100;
+  font-style: light;
+}
+
+@font-face {
+  font-family: 'Maison Mono';
+  src: url('/fonts/Maison_Neue_Mono.ttf') format('truetype');
+}

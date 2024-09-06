@@ -1,13 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Image from "next/image";
 import { Timestamp, doc, getDoc } from "firebase/firestore";
 import { db } from "@/app/firebase/config";
 import { formatTimeDifference } from "../constants";
+import { AuthContext } from "../context/AuthContext";
 
 // Define the types for the props
 interface NotificationCardProps {
   uid: string;
-  type: "requests" | "testimonies"; // Adjust 'other' if you have different types
+  type: string; // Adjust 'other' if you have different types
   notificationTimestamp: Timestamp;
   docId: string;
 }
@@ -31,6 +32,7 @@ const NotificationCard: React.FC<NotificationCardProps> = ({
 }) => {
   const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
   const [requestText, setRequestText] = useState<string>("");
+ 
 
   useEffect(() => {
     const fetchUserDetails = async () => {
@@ -96,7 +98,7 @@ const NotificationCard: React.FC<NotificationCardProps> = ({
 
   return (
     <div
-      className={`bg-white w-[440px] md:w-[400px] lg:w-[600px] p-4 border-2 border-blk1 rounded-2xl flex items-center ${cardShadow} mb-8 hover:scale-[1.05] duration-300 transition-transform:ease`}
+      className={`bg-white w-[400px] md:w-[400px] lg:w-[600px] p-4 border-2 border-blk1 rounded-2xl flex items-center ${cardShadow} mb-8 hover:scale-[1.05] duration-300 transition-transform:ease`}
     >
       {userDetails?.img && (
         <Image

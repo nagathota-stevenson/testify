@@ -12,15 +12,18 @@ import { motion, useAnimation } from "framer-motion";
 const NavBar = ({
   activeButton,
   setActiveButton,
+  
 }: {
   activeButton: string;
   setActiveButton: (button: SetStateAction<string>) => void;
+  
 }) => {
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const { user, userDetails } = useContext(AuthContext);
   const [isOpen, setIsOpen] = useState(false);
   const controls = useAnimation();
   const [reqOrTest, setreqOrTest] = useState("Request");
+  const [notfications, setNotifications] = useState(false);
 
   useEffect(() => {
     controls.start({ opacity: isOpen ? 1 : 0, scale: isOpen ? 1 : 0.9 });
@@ -31,6 +34,8 @@ const NavBar = ({
       setreqOrTest("Requests");
       setIsOpen(!isOpen);
     }
+
+    
 
     if (button === "testimonies") {
       setreqOrTest("Testimony");
@@ -48,7 +53,7 @@ const NavBar = ({
   };
 
   return (
-    <nav className="navbar bg-blk1 flex justify-between items-center p-4 fixed top-0 left-0 w-full z-50">
+    <nav className="navbar bg-blk1 text-xs lg:text-base flex justify-between items-center p-4 fixed top-0 left-0 w-full z-50">
       <div className="hidden lg:flex  md:hidden justify-around items-center px-4 py-2 gap-4">
         <Image
           src="/logow.png"
@@ -59,7 +64,7 @@ const NavBar = ({
         />
         <button
           onClick={() => handleButtonClick("requests")}
-          className={`flex items-center justify-center gap-2 px-4 py-3 rounded-2xl transition-colors duration-300 ${
+          className={`flex text-xs lg:text-base  items-center justify-center gap-2 px-4 py-3 rounded-2xl transition-colors duration-300 ${
             activeButton === "requests" ? "bg-purp text-white" : "text-white"
           }`}
         >
@@ -78,7 +83,7 @@ const NavBar = ({
         </button>
       </div>
 
-      <div className="lg:hidden relative flex items-center justify-between gap-2 text-left">
+      <div className="lg:hidden text-xs lg:text-base relative flex items-center justify-between gap-2 text-left">
         {/* <Image
           src="/logow.png"
           width={32}
@@ -89,7 +94,7 @@ const NavBar = ({
         <div className="relative">
           <button
             onClick={handleToggle}
-            className={`inline-flex w-44 items-center justify-between rounded-2xl shadow-sm px-6 py-3  text-base font-medium text-white  transition-colors duration-300` }
+            className={`inline-flex w-44 items-center justify-between rounded-2xl shadow-sm px-6 py-3  font-medium text-white  transition-colors duration-300`}
           >
             {reqOrTest}
             <RiArrowDropDownLine className="ml-2 h-6 w-6" />
@@ -108,7 +113,7 @@ const NavBar = ({
                     activeButton === "request"
                       ? "bg-purp text-white"
                       : "text-gray-700"
-                  } group flex items-center px-4 py-3 text-base w-full text-left hover:bg-purp hover:text-white transition-colors duration-300`}
+                  } group flex items-center px-4 py-3  w-full text-left hover:bg-purp hover:text-white transition-colors duration-300`}
                 >
                   Request
                 </button>
@@ -118,7 +123,7 @@ const NavBar = ({
                     activeButton === "testimony"
                       ? "bg-coral text-white"
                       : "text-gray-700"
-                  } group flex items-center px-4 py-3 text-base w-full text-left hover:bg-coral hover:text-white transition-colors duration-300`}
+                  } group flex items-center px-4 py-3  w-full text-left hover:bg-coral hover:text-white transition-colors duration-300`}
                 >
                   Testimony
                 </button>

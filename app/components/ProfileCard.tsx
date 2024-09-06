@@ -187,7 +187,7 @@ const ProfileCard : React.FC<{ setActiveButton: (button: string) => void }> = ({
       <p className="text-center text-gray-300 text-sm lg:text-base font-semibold mb-4">
         @{userData.userID}
       </p>
-      <p className="text-center text-purp text-sm font-semibold mb-4">
+      <p className="text-center text-purp text-xs lg:text-base font-semibold mb-4">
         {userPrayersCount} Prayers Received
         <RiArrowLeftDownLine className="inline-block ml-1 " /> |{" "}
         {othersPrayersCount} Prayers Sent
@@ -198,7 +198,7 @@ const ProfileCard : React.FC<{ setActiveButton: (button: string) => void }> = ({
         {userPraisedCount} Praised | {othersPraisedCount} You Praised
       </p> */}
 
-      <div className="flex items-center gap-8">
+      <div className="flex items-center text-xs lg:text-base gap-8">
         <button
           className={`text-white p-[12px] ${
             profileActiveButton === "Requests" ? "border-b-2 border-purp" : ""

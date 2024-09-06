@@ -106,7 +106,7 @@ const LoginCard = () => {
 
   return (
     <motion.div
-      className="login-card bg-white lg:w-[500px] sm:w-[400px] text-xs lg:text-base  rounded-2xl border-2 border-blk1 flex flex-col p-8"
+      className="login-card bg-white w-[400px] lg:w-[500px]  text-xs lg:text-base  rounded-2xl border-2 border-blk1 flex flex-col p-8"
       initial={{ scale: 0.5, opacity: 0 }}
       animate={{ scale: 1, opacity: 1, originY: 0 }}
       exit={{ scale: 0, opacity: 0 }}

@@ -19,6 +19,7 @@ const ProfileDropDown: React.FC<{
     setLoading(true);
     try {
       await signOut(auth);
+      setActiveButton("requests");
       // Optionally, handle navigation or state reset here
       setShowDropdown(false); // Hide dropdown on logout
     } catch (error) {
@@ -50,7 +51,7 @@ const ProfileDropDown: React.FC<{
   return (
     user && (
       <motion.div
-        className="absolute bg-white py-4 rounded-2xl w-80 top-full right-4 mt-2 bg-blk1 shadow-md z-40"
+        className="absolute bg-white py-4 rounded-2xl w-60 lg:w-80 top-full right-4 mt-2 bg-blk1 shadow-md z-40"
         initial={{
           scale: 0,
           opacity: 0,

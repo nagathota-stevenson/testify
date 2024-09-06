@@ -192,7 +192,7 @@ const Card = ({
           </div>
           <div className="ml-4">
             <h2 className="text-sm lg:text-lg font-semibold text-blk1">{userName}</h2>
-            <p className="text-xs lg:text-lg text-gray-500">{userHandle}</p>
+            <p className="text-xs lg:text-base text-gray-500">{userHandle}</p>
             <p className="text-[10px] text-gray-300">{prayerDate}</p>
           </div>
           {isUser && (

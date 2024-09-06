@@ -91,36 +91,34 @@ const NotificationCard: React.FC<NotificationCardProps> = ({
   const cardShadow =
     type === "requests" ? "shadow-custom-purple" : "shadow-custom-coral";
 
-    const textColor =
-    type === "requests" ? "text-purp" : "text-coral";
+  const textColor = type === "requests" ? "text-purp" : "text-coral";
+
 
   return (
     <div
-      className={`bg-white w-[400px] md:w-[400px] lg:w-[600px] p-4 border-2 border-blk1 rounded-2xl flex items-center ${cardShadow} mb-8 hover:scale-[1.05] duration-300 transition-transform:ease`}
+      className={`bg-white w-[440px] md:w-[400px] lg:w-[600px] p-4 border-2 border-blk1 rounded-2xl flex items-center ${cardShadow} mb-8 hover:scale-[1.05] duration-300 transition-transform:ease`}
     >
       {userDetails?.img && (
         <Image
           src={userDetails.img}
           width={64}
           height={64}
-          className="rounded-full"
+          className="rounded-full aspect-square object-cover"
           alt="User Image"
         />
       )}
       <div className="flex flex-col">
-        <h3 className="text-blk1 text-wrap line-clamp-2 ml-2 mr-2">
-          <span className={`${textColor}`}>
-            {userDetails?.displayName}
-          </span>
+        <h3 className="text-blk1 text-wrap text-xs lg:text-base line-clamp-2 ml-2 mr-2">
+          <span className={`${textColor}`}>{userDetails?.displayName}</span>
           {type === "requests"
             ? " has prayed for you."
             : " has praised God for you."}
         </h3>
-        <h5 className="text-gray-400 text-xs text-wrap line-clamp-2 ml-2 mr-2">
+        <h5 className="text-gray-400 text-[10px] lg:text-xs text-wrap line-clamp-2 ml-2 mr-2">
           {requestText}
         </h5>
       </div>
-      <h4 className="text-gray-400 ml-auto mr-2">
+      <h4 className="text-gray-400 text-xs lg:text-base ml-auto mr-2">
         {formatTimeDifference(notificationTimestamp, now)}
       </h4>
     </div>

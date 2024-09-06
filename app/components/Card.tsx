@@ -115,7 +115,7 @@ const Card = ({
   const handleUnsubscribe = async () => {
     const docRef = doc(db, collectionName, docId); // Get document reference
 
-    
+
     try {
       // Retrieve the document to get the prayers array
       const docSnap = await getDoc(docRef);
@@ -191,9 +191,9 @@ const Card = ({
             />
           </div>
           <div className="ml-4">
-            <h2 className="text-lg font-semibold text-blk1">{userName}</h2>
-            <p className="text-sm text-gray-500">{userHandle}</p>
-            <p className="text-xs text-gray-300">{prayerDate}</p>
+            <h2 className="text-sm lg:text-lg font-semibold text-blk1">{userName}</h2>
+            <p className="text-xs lg:text-lg text-gray-500">{userHandle}</p>
+            <p className="text-[10px] text-gray-300">{prayerDate}</p>
           </div>
           {isUser && (
             <button className="ml-auto self-start" onClick={handleDeleteClick}>
@@ -203,13 +203,13 @@ const Card = ({
         </div>
 
         <div className="flex-grow mb-4 overflow-hidden">
-          <p className="text-gray-700 text-balance">{prayerRequest}</p>
+          <p className="text-gray-700 text-xs lg:text-base text-balance">{prayerRequest}</p>
         </div>
 
         <div>
           <div className="border-t border-gray-300"></div>
           <div className="flex justify-between items-center pt-4">
-            <span className="text-blk1 font-semibold text-sm">
+            <span className="text-blk1 font-semibold text-xs lg:text-base">
               {type === "requests"
                 ? `${prayersCount} Prayed`
                 : `${prayersCount} Praised`}
@@ -221,13 +221,13 @@ const Card = ({
                 buttonTextColor="#ffffff"
                 subscribeStatus={subscribe}
                 initialText={
-                  <span className="group flex items-center justify-center gap-2">
+                  <span className="group flex items-center justify-center gap-2 text-xs lg:text-base">
                     {type === "requests" ? <PiHandsPrayingFill /> : <FaHands />}
                     {type === "requests" ? "Pray" : "Praise"}
                   </span>
                 }
                 changeText={
-                  <span className="group flex items-center justify-center gap-2">
+                  <span className="group flex items-center justify-center gap-2 text-xs lg:text-base">
                     {type === "requests" ? <PiHandsPrayingFill /> : <FaHands />}
                     {type === "requests" ? "Prayed!" : "Praised!"}
                   </span>

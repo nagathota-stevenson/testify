@@ -1,3 +1,4 @@
+'use client'
 import React, { createContext, useState, useEffect } from 'react';
 import { auth, db } from '@/app/firebase/config'; // Ensure you've imported your Firestore instance
 import { onAuthStateChanged } from 'firebase/auth';

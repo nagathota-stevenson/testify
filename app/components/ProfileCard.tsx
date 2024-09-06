@@ -172,7 +172,7 @@ const ProfileCard : React.FC<{ setActiveButton: (button: string) => void }> = ({
       exit={{ scale: 0, opacity: 0 }}
       transition={{ type: "spring", stiffness: 350, damping: 40 }}
     >
-      <div className="relative w-44 h-44 rounded-full overflow-hidden">
+      <div className="relative size-24 lg:size-40 rounded-full overflow-hidden">
         <Image
           src={userData?.img || "/dp.png"}
           alt="User DP"
@@ -181,10 +181,10 @@ const ProfileCard : React.FC<{ setActiveButton: (button: string) => void }> = ({
           className="rounded-full"
         />
       </div>
-      <h2 className="text-center text-white text-4xl font-semibold mb-2 mt-4">
+      <h2 className="text-center text-white text-xl lg:text-4xl font-semibold mb-2 mt-4">
         {userData.displayName || "User"}
       </h2>
-      <p className="text-center text-gray-300 text-base font-semibold mb-4">
+      <p className="text-center text-gray-300 text-sm lg:text-base font-semibold mb-4">
         @{userData.userID}
       </p>
       <p className="text-center text-purp text-sm font-semibold mb-4">

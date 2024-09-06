@@ -57,7 +57,6 @@ const NavBar = ({
           className="rounded-full"
           alt="Logo"
         />
-
         <button
           onClick={() => handleButtonClick("requests")}
           className={`flex items-center justify-center gap-2 px-4 py-3 rounded-2xl transition-colors duration-300 ${
@@ -80,17 +79,17 @@ const NavBar = ({
       </div>
 
       <div className="lg:hidden relative flex items-center justify-between gap-2 text-left">
-        <Image
+        {/* <Image
           src="/logow.png"
           width={32}
           height={32}
           className="rounded-full ml-4"
           alt="Logo"
-        />
+        /> */}
         <div className="relative">
           <button
             onClick={handleToggle}
-            className={`inline-flex w-44 items-center justify-between rounded-2xl shadow-sm px-6 py-3  text-base font-medium text-white  transition-colors duration-300 ${activeButton === "requests" && "bg-purp"  } ${activeButton === "testimonies" && "bg-coral"  }` }
+            className={`inline-flex w-44 items-center justify-between rounded-2xl shadow-sm px-6 py-3  text-base font-medium text-white  transition-colors duration-300` }
           >
             {reqOrTest}
             <RiArrowDropDownLine className="ml-2 h-6 w-6" />

@@ -155,10 +155,10 @@ const EditCard: React.FC<EditCardProps> = ({ docId, type }) => {
             />
           )}
           <div className="ml-4">
-            <h2 className="text-lg font-semibold text-blk1">
+            <h2 className="text-sm lg:text-lg font-semibold text-blk1">
               {userDetails?.displayName}
             </h2>
-            <p className="text-sm text-gray-500">@{userDetails?.userID}</p>
+            <p className="text-xs lg:text-sm text-gray-500">@{userDetails?.userID}</p>
           </div>
         </div>
         <textarea
@@ -170,13 +170,13 @@ const EditCard: React.FC<EditCardProps> = ({ docId, type }) => {
               ? "Write your prayer request here.."
               : "Share your inspiring testimony here.."
           }
-          className="min-h-[250px] text-start border-gray-300 text-blk1 mb-4 focus:outline-none focus:ring-0 focus:border-purp resize-none"
+          className="min-h-[250px] text-xs lg:text-base text-start border-gray-300 text-blk1 mb-4 focus:outline-none focus:ring-0 focus:border-purp resize-none"
         />
         <div className="relative flex items-center justify-between gap-4 text-left">
           <div className="relative">
             <button
               onClick={handleToggle}
-              className="inline-flex w-44 items-center justify-between rounded-2xl border border-gray-300 shadow-sm px-6 py-3 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 transition-colors duration-300"
+              className="inline-flex w-36 items-center justify-between rounded-2xl border border-gray-300 shadow-sm px-4 py-2 bg-white text-xs lg:text-base  font-medium text-gray-700 hover:bg-gray-50 transition-colors duration-300"
             >
               {activeButton === "request" ? "Request" : "Testimony"}
               <RiArrowDropDownLine className="ml-2 h-6 w-6" />
@@ -195,7 +195,7 @@ const EditCard: React.FC<EditCardProps> = ({ docId, type }) => {
                       activeButton === "request"
                         ? "bg-purp text-white"
                         : "text-gray-700"
-                    } group flex items-center px-4 py-3 text-base w-full text-left hover:bg-purp hover:text-white transition-colors duration-300`}
+                    } group flex items-center px-4 py-3 text-xs lg:text-base  w-full text-left hover:bg-purp hover:text-white transition-colors duration-300`}
                   >
                     Request
                   </button>
@@ -205,7 +205,7 @@ const EditCard: React.FC<EditCardProps> = ({ docId, type }) => {
                       activeButton === "testimony"
                         ? "bg-coral text-white"
                         : "text-gray-700"
-                    } group flex items-center px-4 py-3 text-base w-full text-left hover:bg-coral hover:text-white transition-colors duration-300`}
+                    } group flex items-center px-4 py-3 text-xs lg:text-base  w-full text-left hover:bg-coral hover:text-white transition-colors duration-300`}
                   >
                     Testimony
                   </button>
@@ -217,7 +217,7 @@ const EditCard: React.FC<EditCardProps> = ({ docId, type }) => {
           <button
             onClick={handlePost}
             disabled={loading || !inputText.trim()}
-            className={`flex items-center justify-center w-36 px-12 py-3 rounded-2xl transition-color duration-300 ${
+            className={`flex text-xs lg:text-base items-center justify-center w-36 px-12 py-3 rounded-2xl transition-color duration-300 ${
               loading || !inputText.trim()
                 ? "bg-gray-300 cursor-not-allowed"
                 : "bg-blk1 text-white hover:bg-blk2"
@@ -237,7 +237,7 @@ const EditCard: React.FC<EditCardProps> = ({ docId, type }) => {
           >
             <div className="text-center flex items-center">
               <FaCheckCircle className="text-green-500 text-4xl mr-2" />
-              <p className="text-xl font-semibold text-blk1">
+              <p className="text-xs lg:text-base font-semibold text-blk1">
                 {activeButton.charAt(0).toUpperCase() + activeButton.slice(1)}{" "}
                 Posted!
               </p>

@@ -17,15 +17,12 @@ export default function Home() {
     <AuthProvider>
       <main className="bg-blk1">
         <NavBar activeButton={activeButton} setActiveButton={setActiveButton} />
-        {/* <FadeTransition trigger={activeButton}>
-        </FadeTransition> */}
           {activeButton === "requests" && <RequestsPage />}
           {activeButton === "add" && <PostPage />}
           {activeButton === "testimonies" && <TestimoniesPage />}
           {activeButton === "profile" && <ProfilePage setActiveButton={setActiveButton}/>}
           {activeButton === "notifications" && <NotificationsPage />}
           {activeButton === "edit" && <EditProfilePage setActiveButton={setActiveButton} />}
-        
       </main>
     </AuthProvider>
   );

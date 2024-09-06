@@ -1,5 +1,5 @@
-export const TITLE = "testifythth";
-export const PROFILE_IMG = "https://firebasestorage.googleapis.com/v0/b/testifyth-adfa4.appspot.com/o/anonymous%2Faccount.png?alt=media&token=a9863ed1-f585-4ac1-bbeb-3d3ae7db79e1"
+export const TITLE = "testifyth";
+export const PROFILE_IMG = "https://firebasestorage.googleapis.com/v0/b/testify-adfa4.appspot.com/o/anonymous%2Faccount.png?alt=media&token=a9863ed1-f585-4ac1-bbeb-3d3ae7db79e1"
 
 export const formatTimeDifference = (
     startTimestamp,

@@ -3,7 +3,7 @@ import "./globals.css";
 import { AuthProvider } from "./context/AuthContext";
 
 export const metadata: Metadata = {
-  title: "testifythth",
+  title: "testifyth",
   description: "Pray for Unknown, Praise the Known",
 };
 

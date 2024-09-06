@@ -66,7 +66,7 @@ const LoginCard = () => {
 
       if (!docSnap.exists()) {
         const userData = {
-          img: user.photoURL || PROFILE_IMG,
+          img: PROFILE_IMG,
           isUserId: false,
           name: user.displayName || "",
           userID: "",

@@ -34,7 +34,11 @@ export default function RootLayout({
         <meta property="og:url" content="https://testifyth.com" />
         <meta property="og:type" content="website" />
         <meta property="og:site_name" content="testifyth" />
-        <meta property="og:image" content="/og-image.png" />
+        <meta property="og:image" content="<generated>" />
+        <meta property="og:image:type" content="<generated>" />
+        <meta property="og:image:width" content="<generated>" />
+        <meta property="og:image:height" content="<generated>" />
+        <meta property="og:image:alt" content="testifyth | Pray for Unknown. Praise the Known" />
 
         <link rel="icon" href="/favicon.ico" />
       </head>

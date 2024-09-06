@@ -3,9 +3,12 @@ import { AuthContext } from "../context/AuthContext";
 import {
   collection,
   doc,
+  DocumentData,
+  DocumentSnapshot,
   getDoc,
   getDocs,
   query,
+  QuerySnapshot,
   where,
 } from "firebase/firestore";
 import { signOut } from "firebase/auth";
@@ -25,7 +28,9 @@ interface UserData {
   isUserId: boolean;
 }
 
-const ProfileCard : React.FC<{ setActiveButton: (button: string) => void }> = ({ setActiveButton }) => {
+const ProfileCard: React.FC<{ setActiveButton: (button: string) => void }> = ({
+  setActiveButton,
+}) => {
   const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -69,65 +74,70 @@ const ProfileCard : React.FC<{ setActiveButton: (button: string) => void }> = ({
         const userId = auth.currentUser.uid;
         const requestsRef = collection(db, "requests");
         const testimoniesRef = collection(db, "testimonies");
-
+  
         try {
-          // Count how many documents in requests and testimonies have the current user's UID in their prayers field
-          const userPrayersQueryRequests = query(
-            requestsRef,
-            where("prayers", "array-contains", userId)
-          );
-          const userPrayersQueryTestimonies = query(
-            testimoniesRef,
-            where("prayers", "array-contains", userId)
-          );
-
-          const [userPrayersSnapshotRequests, userPrayersSnapshotTestimonies] =
-            await Promise.all([
-              getDocs(userPrayersQueryRequests),
-              getDocs(userPrayersQueryTestimonies),
-            ]);
-
-          setUserPrayersCount(
-            userPrayersSnapshotRequests.size +
-              userPrayersSnapshotTestimonies.size
-          );
-
-          // Count how many documents in requests have other users' UID in their prayers field
-          const othersPrayersQuery = query(
-            requestsRef,
-            where("prayers", "array-contains", userId)
-          );
-          const othersPrayersSnapshot = await getDocs(othersPrayersQuery);
-          setOthersPrayersCount(othersPrayersSnapshot.size);
-
-          // Count how many documents in requests and testimonies have the current user's UID in their praises field
-          const userPraisedQueryRequests = query(
-            requestsRef,
-            where("prayers", "array-contains", userId)
-          );
-          const userPraisedQueryTestimonies = query(
-            testimoniesRef,
-            where("prayers", "array-contains", userId)
-          );
-
-          const [userPraisedSnapshotRequests, userPraisedSnapshotTestimonies] =
-            await Promise.all([
-              getDocs(userPraisedQueryRequests),
-              getDocs(userPraisedQueryTestimonies),
-            ]);
-
-          setUserPraisedCount(
-            userPraisedSnapshotRequests.size +
-              userPraisedSnapshotTestimonies.size
-          );
-
-          // Count how many documents in requests have other users' UID in their praises field
-          const othersPraisedQuery = query(
-            requestsRef,
-            where("prayers", "array-contains", userId)
-          );
-          const othersPraisedSnapshot = await getDocs(othersPraisedQuery);
-          setOthersPraisedCount(othersPraisedSnapshot.size);
+          // Fetch documents from requests and testimonies
+          const requestsSnapshot = await getDocs(requestsRef);
+          const testimoniesSnapshot = await getDocs(testimoniesRef);
+  
+          let userPrayersCount = 0;
+          let othersPrayersCount = 0;
+          let userPraisedCount = 0;
+          let othersPraisedCount = 0;
+  
+          // Function to count documents with userId in prayers array
+          const countUserPrayers = (snapshot: QuerySnapshot<DocumentData>) => {
+            let count = 0;
+            snapshot.forEach((doc: DocumentSnapshot<DocumentData>) => {
+              const prayers = doc.data()?.prayers || [];
+              const hasUserPrayed = prayers.some((prayer: { uid: string }) => prayer.uid === userId);
+              if (hasUserPrayed) count++;
+            });
+            return count;
+          };
+  
+          // Function to count documents with other users' uid in prayers array
+          const countOthersPrayers = (snapshot: QuerySnapshot<DocumentData>) => {
+            let count = 0;
+            snapshot.forEach((doc: DocumentSnapshot<DocumentData>) => {
+              const prayers = doc.data()?.prayers || [];
+              const hasOtherPrayed = prayers.some((prayer: { uid: string }) => prayer.uid !== userId);
+              if (hasOtherPrayed) count++;
+            });
+            return count;
+          };
+  
+          // Count user prayers and praised counts
+          userPrayersCount += countUserPrayers(requestsSnapshot);
+          userPrayersCount += countUserPrayers(testimoniesSnapshot);
+  
+          // Count others' prayers
+          othersPrayersCount += countOthersPrayers(requestsSnapshot);
+          othersPrayersCount += countOthersPrayers(testimoniesSnapshot);
+  
+          // Similar counting logic for praised if applicable
+          const countUserPraised = (snapshot: QuerySnapshot<DocumentData>) => {
+            let count = 0;
+            snapshot.forEach((doc: DocumentSnapshot<DocumentData>) => {
+              const praises = doc.data()?.praises || [];
+              const hasUserPraised = praises.some((praise: { uid: string }) => praise.uid === userId);
+              if (hasUserPraised) count++;
+            });
+            return count;
+          };
+  
+          userPraisedCount += countUserPraised(requestsSnapshot);
+          userPraisedCount += countUserPraised(testimoniesSnapshot);
+  
+          // Count others' praised counts if needed
+          othersPraisedCount += countUserPraised(requestsSnapshot);
+          othersPraisedCount += countUserPraised(testimoniesSnapshot);
+  
+          setUserPrayersCount(userPrayersCount);
+          setOthersPrayersCount(othersPrayersCount);
+          setUserPraisedCount(userPraisedCount);
+          setOthersPraisedCount(othersPraisedCount);
+  
         } catch (err) {
           if (err instanceof Error) {
             setError(err.message);
@@ -137,9 +147,12 @@ const ProfileCard : React.FC<{ setActiveButton: (button: string) => void }> = ({
         }
       }
     };
-
+  
     calculateCounts();
   }, []);
+  
+  
+  
 
   // Show loading indicator while fetching data
   if (loading) {
@@ -157,11 +170,7 @@ const ProfileCard : React.FC<{ setActiveButton: (button: string) => void }> = ({
   }
 
   if (!userData.isUserId) {
-    return (
-      <SetupUser
-        setActiveButton={setActiveButton}
-      />
-    );
+    return <SetupUser setActiveButton={setActiveButton} />;
   }
 
   return (
@@ -188,9 +197,9 @@ const ProfileCard : React.FC<{ setActiveButton: (button: string) => void }> = ({
         @{userData.userID}
       </p>
       <p className="text-center text-purp text-xs lg:text-base font-semibold mb-4">
-        {userPrayersCount} Prayers Received
+      {othersPrayersCount} Prayers Received
         <RiArrowLeftDownLine className="inline-block ml-1 " /> |{" "}
-        {othersPrayersCount} Prayers Sent
+        {userPrayersCount} Prayers Sent
         <MdArrowOutward className="inline-block ml-1" />{" "}
       </p>
 
@@ -209,7 +218,9 @@ const ProfileCard : React.FC<{ setActiveButton: (button: string) => void }> = ({
         </button>
         <button
           className={`text-white p-[12px] ${
-            profileActiveButton === "Testimonies" ? "border-b-2 border-coral" : ""
+            profileActiveButton === "Testimonies"
+              ? "border-b-2 border-coral"
+              : ""
           }`}
           onClick={() => setProfileActiveButton("Testimonies")}
         >

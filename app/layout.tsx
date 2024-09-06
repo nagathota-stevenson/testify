@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { AuthProvider } from "./context/AuthContext";
-import { Head } from "next/document";
 
 export const metadata: Metadata = {
   title: "testifyth",

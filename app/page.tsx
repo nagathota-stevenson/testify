@@ -9,7 +9,6 @@ import FadeTransition from "./components/FadeTransition";
 import { AuthProvider } from "./context/AuthContext";
 import EditProfilePage from "./pages/EditProfilePage";
 import NotificationsPage from "./pages/NotificationsPage";
-import { Head } from "next/document";
 
 export default function Home() {
   const [activeButton, setActiveButton] = useState("requests");

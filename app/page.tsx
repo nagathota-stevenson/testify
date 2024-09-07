@@ -1,33 +1,16 @@
 "use client";
-import { useState } from "react";
 import NavBar from "./components/NavBar";
-import RequestsPage from "./pages/RequestsPage";
-import PostPage from "./pages/PostPage";
-import TestimoniesPage from "./pages/TestimoniesPage";
-import ProfilePage from "./pages/ProfilePage";
-import FadeTransition from "./components/FadeTransition";
 import { AuthProvider } from "./context/AuthContext";
-import EditProfilePage from "./pages/EditProfilePage";
-import NotificationsPage from "./pages/NotificationsPage";
+import CardBentoAll from "./components/CardsBentoAll";
 
 export default function Home() {
-  const [activeButton, setActiveButton] = useState("requests");
-  const [isDropdown, setisDropDown] = useState(false);
-  const [notify, setNotify] = useState(false);
-
-  console.log(notify + "home");
-
   return (
     <AuthProvider>
-      
       <main className="bg-blk1">
-        <NavBar activeButton={activeButton} setActiveButton={setActiveButton} />
-          {activeButton === "requests" && <RequestsPage />}
-          {activeButton === "add" && <PostPage />}
-          {activeButton === "testimonies" && <TestimoniesPage />}
-          {activeButton === "profile" && <ProfilePage setActiveButton={setActiveButton}/>}
-          {activeButton === "notifications" && <NotificationsPage  />}
-          {activeButton === "edit" && <EditProfilePage setActiveButton={setActiveButton} />}
+        <NavBar />
+        <section className="bg-blk1 w-screen h-screen flex items-center justify-center pt-24 pb-24">
+          <CardBentoAll collectionName="all" homePage={true} />
+        </section>
       </main>
     </AuthProvider>
   );

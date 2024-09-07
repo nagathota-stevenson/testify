@@ -47,7 +47,7 @@ const EditCard: React.FC<EditCardProps> = ({ docId, type }) => {
           if (docSnap.exists()) {
             setInputText(docSnap.data()?.req || docSnap.data()?.praise || "");
           } else {
-            console.log("No such document!");
+            // console.log("No such document!");
           }
         } catch (error) {
           console.error("Error fetching document: ", error);
@@ -147,12 +147,13 @@ const EditCard: React.FC<EditCardProps> = ({ docId, type }) => {
         <div className="flex items-center mb-4">
           {userDetails?.img && (
             <Image
-              src={userDetails.img}
-              width={64}
-              height={64}
-              className="rounded-full"
-              alt="User Image"
-            />
+            src={userDetails.img}
+            width={64}
+            height={64}
+            className="rounded-full aspect-square object-cover"
+            alt="User Image"
+          />
+            
           )}
           <div className="ml-4">
             <h2 className="text-sm lg:text-lg font-semibold text-blk1">

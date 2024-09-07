@@ -3,7 +3,7 @@ import "./Card.css";
 import Image from "next/image";
 import { PiHandsPrayingFill } from "react-icons/pi";
 import { AnimatedSubscribeButton } from "./magicui/animated-subscribe-button";
-import { MdEdit } from "react-icons/md";
+import { MdDelete } from "react-icons/md";
 import { FaHands } from "react-icons/fa";
 import {
   doc,
@@ -11,12 +11,10 @@ import {
   arrayUnion,
   arrayRemove,
   deleteDoc,
-  serverTimestamp,
   Timestamp,
   getDoc,
 } from "firebase/firestore";
-import { db } from "@/app/firebase/config"; // Make sure to import your Firestore instance
-import { MdDelete } from "react-icons/md";
+import { db } from "@/app/firebase/config";
 import { AnimatePresence, motion } from "framer-motion";
 
 type Prayer = {
@@ -31,7 +29,7 @@ type CardProps = {
   prayerDate?: string;
   prayerRequest?: string;
   prayersCount?: string;
-  type?: string;
+  type?: "requests" | "testimonies"; // Updated type definition
   prayers?: (Prayer | string)[]; // prayers is an array of strings
   isUser?: boolean;
   docId?: string;
@@ -45,7 +43,7 @@ const Card = ({
   prayerDate = "",
   prayerRequest = "",
   prayersCount = "",
-  type = "",
+  type = "requests", // Default to "requests"
   prayers = [], // Array of strings
   isUser = false,
   uid = "", // String uid
@@ -64,7 +62,7 @@ const Card = ({
 
     try {
       await deleteDoc(docRef); // Delete the document from Firestore
-      console.log("Document deleted successfully");
+      // // console.log("Document deleted successfully");
       setShowConfirm(false); // Hide confirmation overlay
     } catch (error) {
       console.error("Error deleting document:", error);
@@ -75,8 +73,6 @@ const Card = ({
   const handleCancelDelete = () => {
     setShowConfirm(false); // Hide confirmation overlay
   };
-
-  // Assuming it's an array of objects and strings
 
   useEffect(() => {
     const isSubscribed = prayers.some((prayer) => {
@@ -114,7 +110,6 @@ const Card = ({
   // Handle Unsubscribe (Remove uid from prayers array)
   const handleUnsubscribe = async () => {
     const docRef = doc(db, collectionName, docId); // Get document reference
-
 
     try {
       // Retrieve the document to get the prayers array

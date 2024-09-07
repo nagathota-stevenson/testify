@@ -1,3 +1,4 @@
+"use client";
 import React, { useState, useEffect } from "react";
 import { auth, db, storage } from "@/app/firebase/config";
 import {
@@ -15,10 +16,9 @@ import { BiSolidXCircle } from "react-icons/bi";
 import { FiEdit } from "react-icons/fi";
 import _ from "lodash";
 import { motion } from "framer-motion";
+import { useRouter, usePathname } from "next/navigation";
 
-const SetupUser: React.FC<{ setActiveButton: (button: string) => void }> = ({
-  setActiveButton,
-}) => {
+const SetupUser = () => {
   const [displayName, setDisplayName] = useState("");
   const [userID, setUserID] = useState("");
   const [profileImage, setProfileImage] = useState<File | null>(null);
@@ -29,6 +29,8 @@ const SetupUser: React.FC<{ setActiveButton: (button: string) => void }> = ({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [userIDError, setUserIDError] = useState<boolean | null>(null);
+  const router = useRouter();
+
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -102,22 +104,25 @@ const SetupUser: React.FC<{ setActiveButton: (button: string) => void }> = ({
     e.preventDefault();
     setLoading(true);
     setError(null);
-  
+
     try {
       if (userIDError) {
         throw new Error("User ID is already taken.");
       }
-  
+
       let url = "";
-  
+
       // Handle image upload
       if (profileImage) {
-        const imageRef = ref(storage, `profile_images/${auth.currentUser?.uid}`);
+        const imageRef = ref(
+          storage,
+          `profile_images/${auth.currentUser?.uid}`
+        );
         await uploadBytes(imageRef, profileImage); // Upload the file
         url = await getDownloadURL(imageRef); // Get the download URL
         setImageURL(url); // Optionally store it in the state
       }
-  
+
       // Save user data to Firestore
       const userDocRef = doc(db, "users", auth.currentUser?.uid || "");
       await setDoc(
@@ -130,17 +135,14 @@ const SetupUser: React.FC<{ setActiveButton: (button: string) => void }> = ({
         },
         { merge: true }
       );
-  
-      
-      setActiveButton("requests");
-     
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unknown error");
     } finally {
+     
       setLoading(false);
+      router.push("/profile");
     }
   };
-  
 
   return (
     <motion.div

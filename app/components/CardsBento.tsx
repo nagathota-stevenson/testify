@@ -14,7 +14,6 @@ import {
 import { db } from "@/app/firebase/config";
 import Card from "../components/Card";
 import { AuthContext } from "@/app/context/AuthContext";
-import "./RequestsPage.css";
 import { AnimatedList } from "../components/magicui/animated-list";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -68,7 +67,7 @@ const CardBento: React.FC<CardBentoProps> = ({
 
     // Set up a real-time listener
     const unsubscribe = onSnapshot(collectionQuery, async (snapshot) => {
-      console.log("Snapshot received:", snapshot); // Debugging line
+      // console.log("Snapshot received:", snapshot); // Debugging line
       const itemsList: (Request & User)[] = await Promise.all(
         snapshot.docs.map(async (itemDocument) => {
           const itemData = itemDocument.data() as Request;
@@ -93,7 +92,7 @@ const CardBento: React.FC<CardBentoProps> = ({
         })
       );
 
-      console.log("Items list:", itemsList); // Debugging line
+      // console.log("Items list:", itemsList); // Debugging line
       setItems(itemsList);
     });
 

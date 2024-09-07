@@ -44,7 +44,7 @@ const LoginCard = () => {
 
       setEmail("");
       setPassword("");
-      console.log("User signed up and added to Firestore successfully!");
+      // console.log("User signed up and added to Firestore successfully!");
     } catch (error) {
       if (error instanceof Error) {
         console.error("Error during sign up:", error.message);
@@ -74,7 +74,7 @@ const LoginCard = () => {
         await setDoc(docRef, userData);
       }
 
-      console.log("User signed in with Google successfully!");
+      // console.log("User signed in with Google successfully!");
     } catch (error) {
       if (error instanceof Error) {
         console.error("Error during Google sign in:", error.message);
@@ -90,7 +90,7 @@ const LoginCard = () => {
       await signInWithEmailAndPassword(auth, email, password);
       setEmail("");
       setPassword("");
-      console.log("User logged in successfully!");
+      // console.log("User logged in successfully!");
     } catch (error) {
       if (error instanceof Error) {
         console.error("Error during login:", error.message);

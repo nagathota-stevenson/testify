@@ -15,8 +15,8 @@ import { signOut } from "firebase/auth";
 import { db, auth } from "@/app/firebase/config"; // Adjust the import path as needed
 import SetupUser from "./SetupUser";
 import Image from "next/image";
-import RequestsPage from "../pages/RequestsPage";
-import CardBento from "../pages/CardsBento";
+import RequestsPage from "../requests/page";
+import CardBento from "./CardsBento";
 import { MdArrowOutward } from "react-icons/md";
 import { RiArrowLeftDownLine } from "react-icons/ri";
 import { motion } from "framer-motion";
@@ -50,7 +50,7 @@ const ProfileCard: React.FC<{ setActiveButton: (button: string) => void }> = ({
           if (docSnapshot.exists()) {
             setUserData(docSnapshot.data() as UserData); // Set the user data
           } else {
-            console.log("No such document!");
+            // console.log("No such document!");
           }
         } catch (err) {
           if (err instanceof Error) {
@@ -170,7 +170,7 @@ const ProfileCard: React.FC<{ setActiveButton: (button: string) => void }> = ({
   }
 
   if (!userData.isUserId) {
-    return <SetupUser setActiveButton={setActiveButton} />;
+    return <SetupUser />;
   }
 
   return (

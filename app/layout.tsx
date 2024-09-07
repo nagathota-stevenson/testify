@@ -37,11 +37,16 @@ export default function RootLayout({
         <meta property="og:image:type" content="<generated>" />
         <meta property="og:image:width" content="<generated>" />
         <meta property="og:image:height" content="<generated>" />
-        <meta property="og:image:alt" content="testifyth | Pray for Unknown. Praise the Known" />
+        <meta
+          property="og:image:alt"
+          content="testifyth | Pray for Unknown. Praise the Known"
+        />
 
         <link rel="icon" href="/favicon.ico" />
       </head>
-      <body>{children}</body>
+      <body>
+        <AuthProvider>{children}</AuthProvider>
+      </body>
     </html>
   );
 }

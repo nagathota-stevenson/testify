@@ -1,43 +1,35 @@
 "use client";
-import { useState, useContext, SetStateAction, useEffect } from "react";
+import { useState, useContext, useEffect } from "react";
 import { IoNotifications } from "react-icons/io5";
 import Image from "next/image";
 import { AuthContext } from "@/app/context/AuthContext";
 import { MdAddBox } from "react-icons/md";
 import { RiArrowDropDownLine } from "react-icons/ri";
 import ProfileDropDown from "./ProfileDropDown";
-import { DropdownProvider } from "@/app/context/DropDownContext";
 import { motion, useAnimation } from "framer-motion";
+import { useRouter, usePathname } from "next/navigation"; // Updated imports
 
-const NavBar = ({
-  activeButton,
-  setActiveButton,
-}: {
-  activeButton: string;
-  setActiveButton: (button: SetStateAction<string>) => void;
-}) => {
+const NavBar = () => {
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const { user, userDetails } = useContext(AuthContext);
   const [isOpen, setIsOpen] = useState(false);
   const controls = useAnimation();
-  const [reqOrTest, setreqOrTest] = useState("Request");
-  const [notfications, setNotifications] = useState(false);
- 
+  const [reqOrTest, setReqOrTest] = useState("Request");
+  const [mounted, setMounted] = useState(false); // State to track if component is mounted
+  const router = useRouter();
+  const pathname = usePathname(); // Use pathname hook
+
+  // Only set mounted to true once the component has mounted
   useEffect(() => {
+    setMounted(true);
     controls.start({ opacity: isOpen ? 1 : 0, scale: isOpen ? 1 : 0.9 });
-  }, [isOpen]);
+  }, [isOpen, controls]);
 
-  const handleButtonClick = (button: SetStateAction<string>) => {
-    if (button === "requests") {
-      setreqOrTest("Requests");
-      setIsOpen(!isOpen);
+  // Ensure router is available by checking if mounted is true
+  const handleNavigation = (path: string) => {
+    if (mounted) {
+      router.push(path); // Navigate to the route
     }
-
-    if (button === "testimonies") {
-      setreqOrTest("Testimony");
-      setIsOpen(!isOpen);
-    }
-    setActiveButton(button);
   };
 
   const handleDropdownToggle = () => {
@@ -50,29 +42,28 @@ const NavBar = ({
 
   return (
     <nav className="navbar bg-blk1 text-xs lg:text-base flex justify-between items-center p-4 fixed top-0 left-0 w-full z-50">
-      <div className="hidden lg:flex  md:hidden justify-around items-center px-4 py-2 gap-4">
+      <div className="hidden lg:flex md:hidden justify-around items-center px-4 py-2 gap-4">
         <Image
           src="/logow.png"
           width={32}
           height={32}
           className="rounded-full"
           alt="Logo"
+          onClick={() => handleNavigation("/")} // Navigate to home
         />
         <button
-          onClick={() => handleButtonClick("requests")}
-          className={`flex text-xs lg:text-base  items-center justify-center gap-2 px-4 py-3 rounded-2xl transition-colors duration-300 ${
-            activeButton === "requests" ? "bg-purp text-white" : "text-white"
+          onClick={() => handleNavigation("/requests")} // Route to requests page
+          className={`flex text-xs lg:text-base items-center justify-center gap-2 px-4 py-3 rounded-2xl transition-colors duration-300 ${
+            pathname === "/requests" ? "bg-purp text-white" : "text-white"
           }`}
         >
           Requests
         </button>
 
         <button
-          onClick={() => handleButtonClick("testimonies")}
+          onClick={() => handleNavigation("/testimonies")} // Route to testimonies page
           className={`flex items-center justify-center gap-2 px-4 py-3 rounded-2xl transition-colors duration-300 ${
-            activeButton === "testimonies"
-              ? "bg-coral text-white"
-              : "text-white"
+            pathname === "/testimonies" ? "bg-coral text-white" : "text-white"
           }`}
         >
           Testimonies
@@ -80,13 +71,6 @@ const NavBar = ({
       </div>
 
       <div className="lg:hidden text-xs lg:text-base relative flex items-center justify-between gap-2 text-left">
-        {/* <Image
-          src="/logow.png"
-          width={32}
-          height={32}
-          className="rounded-full ml-4"
-          alt="Logo"
-        /> */}
         <div className="relative">
           <button
             onClick={handleToggle}
@@ -104,21 +88,17 @@ const NavBar = ({
             >
               <div className="py-4 shadow-md">
                 <button
-                  onClick={() => handleButtonClick("requests")}
+                  onClick={() => handleNavigation("/requests")}
                   className={`${
-                    activeButton === "request"
-                      ? "bg-purp text-white"
-                      : "text-gray-700"
+                    pathname === "/requests" ? "bg-purp text-white" : "text-gray-700"
                   } group flex items-center px-4 py-3  w-full text-left hover:bg-purp hover:text-white transition-colors duration-300`}
                 >
                   Request
                 </button>
                 <button
-                  onClick={() => handleButtonClick("testimonies")}
+                  onClick={() => handleNavigation("/testimonies")}
                   className={`${
-                    activeButton === "testimony"
-                      ? "bg-coral text-white"
-                      : "text-gray-700"
+                    pathname === "/testimonies" ? "bg-coral text-white" : "text-gray-700"
                   } group flex items-center px-4 py-3  w-full text-left hover:bg-coral hover:text-white transition-colors duration-300`}
                 >
                   Testimony
@@ -130,11 +110,11 @@ const NavBar = ({
       </div>
 
       <div className="flex justify-around items-center px-4 py-2 gap-4 relative">
-        {user  && userDetails?.isUserId && (
+        {user && userDetails?.isUserId && (
           <button
-            onClick={() => handleButtonClick("add")}
+            onClick={() => handleNavigation("/post")}
             className={`flex items-center justify-center  w-[42px] h-[42px] rounded-full transition-colors duration-300 ${
-              activeButton === "add" ? "text-purp" : "text-white"
+              pathname === "/post" ? "text-purp" : "text-white"
             }`}
           >
             <MdAddBox className="text-2xl" />
@@ -142,9 +122,9 @@ const NavBar = ({
         )}
         {user && userDetails?.isUserId && (
           <button
-            onClick={() => handleButtonClick("notifications")}
+            onClick={() => handleNavigation("/notifications")}
             className={`flex items-center justify-center w-[42px] h-[42px] rounded-full transition-colors duration-300 ${
-              activeButton === "notifications" ? "text-purp" : "text-white"
+              pathname === "/notifications" ? "text-purp" : "text-white"
             }`}
           >
             <IoNotifications className="text-2xl" />
@@ -153,11 +133,9 @@ const NavBar = ({
 
         {!user && (
           <button
-            onClick={() => handleButtonClick("profile")}
+            onClick={() => handleNavigation("/profile")}
             className={`flex items-center justify-center gap-2 px-4 py-3 rounded-2xl transition-colors duration-300 transform ${
-              activeButton === "profile"
-                ? "bg-white text-blk1"
-                : "bg-white text-blk1"
+              pathname === "/profile" ? "bg-white text-blk1" : "bg-white text-blk1"
             } hover:bg-gray-200 active:bg-gray-200 active:scale-95`}
           >
             Login
@@ -166,23 +144,23 @@ const NavBar = ({
 
         {user && (
           <button
-            onClick={() => handleButtonClick("profile")}
+            onClick={() => handleNavigation("/profile")}
             className={`flex items-center justify-center  rounded-full transition-colors duration-300 ${
-              activeButton === "profile" ? "bg-purp text-white" : "text-white"
+              pathname === "/profile" ? "bg-purp text-white" : "text-white"
             }`}
           >
             <div className="relative w-10 h-10 rounded-full overflow-hidden">
               <Image
                 src={userDetails?.img || "/dp.png"}
                 alt="User DP"
-                layout="fill" // Fills the container
-                objectFit="cover" // Ensures the image covers the container
+                layout="fill"
+                objectFit="cover"
                 className="rounded-full"
               />
             </div>
           </button>
         )}
-        {user  && (
+        {user && (
           <button
             onClick={handleDropdownToggle}
             className="flex items-center justify-center text-white rounded-full transition-colors duration-300 active:text-purp"
@@ -191,10 +169,7 @@ const NavBar = ({
           </button>
         )}
 
-        {/* Dropdown menu */}
-        {isDropdownOpen && (
-          <ProfileDropDown setActiveButton={setActiveButton} />
-        )}
+        {isDropdownOpen && <ProfileDropDown />}
       </div>
     </nav>
   );

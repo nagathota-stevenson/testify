@@ -1,3 +1,4 @@
+'use client';
 import React, { useContext, useState, useEffect } from "react";
 import { AuthContext } from "@/app/context/AuthContext";
 import { signOut } from "firebase/auth";
@@ -7,20 +8,21 @@ import { motion } from "framer-motion";
 import { FiEdit } from "react-icons/fi";
 import { FiLogOut } from "react-icons/fi";
 import { SlSettings } from "react-icons/sl";
+import { useRouter } from 'next/navigation'; // Import useRouter from next/navigation
 
-const ProfileDropDown: React.FC<{
-  setActiveButton: (button: string) => void;
-}> = ({ setActiveButton }) => {
+const ProfileDropDown = () => {
   const { user, userDetails } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
   const [showDropdown, setShowDropdown] = useState(true);
+  const router = useRouter(); // Initialize the useRouter hook
 
   const handleLogout = async () => {
     setLoading(true);
     try {
       await signOut(auth);
-      setActiveButton("requests");
+    
       // Optionally, handle navigation or state reset here
+      router.push('/requests'); // Redirect to the login page or home page
       setShowDropdown(false); // Hide dropdown on logout
     } catch (error) {
       console.error("Error logging out: ", error);
@@ -30,13 +32,15 @@ const ProfileDropDown: React.FC<{
   };
 
   const handleEditProfile = () => {
-    setActiveButton("edit");
+   
     setShowDropdown(false); // Optionally close dropdown
+    router.push('/edit/profile'); // Navigate to the edit profile page
   };
 
   const handleSettings = () => {
-    setActiveButton("settings");
+    
     setShowDropdown(false);
+    router.push('/settings'); // Navigate to the settings page
   };
 
   useEffect(() => {
@@ -45,7 +49,7 @@ const ProfileDropDown: React.FC<{
     }
   }, [user]);
 
-  console.log(userDetails);
+  // console.log(userDetails);
 
   // Render nothing if loading or userDetails are not available
   if (loading || !showDropdown) return null;

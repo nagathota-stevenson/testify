@@ -14,7 +14,7 @@ const NavBar = () => {
   const { user, userDetails } = useContext(AuthContext);
   const [isOpen, setIsOpen] = useState(false);
   const controls = useAnimation();
-  const [reqOrTest, setReqOrTest] = useState("Request");
+  const [reqOrTest, setReqOrTest] = useState("Requests");
   const [mounted, setMounted] = useState(false); // State to track if component is mounted
   const router = useRouter();
   const pathname = usePathname(); // Use pathname hook
@@ -25,10 +25,18 @@ const NavBar = () => {
     controls.start({ opacity: isOpen ? 1 : 0, scale: isOpen ? 1 : 0.9 });
   }, [isOpen, controls]);
 
-  // Ensure router is available by checking if mounted is true
+  useEffect(() => {
+    if (pathname === "/requests") {
+      setReqOrTest("Requests");
+    }
+    if (pathname === "/testimonies") {
+      setReqOrTest("Testimonies");
+    }
+  }, [pathname]);
+
   const handleNavigation = (path: string) => {
     if (mounted) {
-      router.push(path); // Navigate to the route
+      router.push(path); 
     }
   };
 
@@ -41,7 +49,7 @@ const NavBar = () => {
   };
 
   return (
-    <nav className="navbar bg-blk1 text-xs lg:text-base flex justify-between items-center p-4 fixed top-0 left-0 w-full z-50">
+    <nav className="navbar bg-blk1 text-sm lg:text-base flex justify-between items-center p-4 fixed top-0 left-0 w-full z-50">
       <div className="hidden lg:flex md:hidden justify-around items-center px-4 py-2 gap-4">
         <Image
           src="/logow.png"
@@ -70,7 +78,7 @@ const NavBar = () => {
         </button>
       </div>
 
-      <div className="lg:hidden text-xs lg:text-base relative flex items-center justify-between gap-2 text-left">
+      <div className="lg:hidden text-sm lg:text-base relative flex items-center justify-between gap-2 text-left">
         <div className="relative">
           <button
             onClick={handleToggle}
@@ -90,18 +98,22 @@ const NavBar = () => {
                 <button
                   onClick={() => handleNavigation("/requests")}
                   className={`${
-                    pathname === "/requests" ? "bg-purp text-white" : "text-gray-700"
+                    pathname === "/requests"
+                      ? "bg-purp text-white"
+                      : "text-gray-700"
                   } group flex items-center px-4 py-3  w-full text-left hover:bg-purp hover:text-white transition-colors duration-300`}
                 >
-                  Request
+                  Requests
                 </button>
                 <button
                   onClick={() => handleNavigation("/testimonies")}
                   className={`${
-                    pathname === "/testimonies" ? "bg-coral text-white" : "text-gray-700"
+                    pathname === "/testimonies"
+                      ? "bg-coral text-white"
+                      : "text-gray-700"
                   } group flex items-center px-4 py-3  w-full text-left hover:bg-coral hover:text-white transition-colors duration-300`}
                 >
-                  Testimony
+                  Testimonies
                 </button>
               </div>
             </motion.div>
@@ -135,7 +147,9 @@ const NavBar = () => {
           <button
             onClick={() => handleNavigation("/profile")}
             className={`flex items-center justify-center gap-2 px-4 py-3 rounded-2xl transition-colors duration-300 transform ${
-              pathname === "/profile" ? "bg-white text-blk1" : "bg-white text-blk1"
+              pathname === "/profile"
+                ? "bg-white text-blk1"
+                : "bg-white text-blk1"
             } hover:bg-gray-200 active:bg-gray-200 active:scale-95`}
           >
             Login
@@ -168,7 +182,6 @@ const NavBar = () => {
             <RiArrowDropDownLine className="text-3xl" />
           </button>
         )}
-
         {isDropdownOpen && <ProfileDropDown />}
       </div>
     </nav>

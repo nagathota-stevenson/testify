@@ -12,11 +12,9 @@ import { motion, useAnimation } from "framer-motion";
 const NavBar = ({
   activeButton,
   setActiveButton,
-  
 }: {
   activeButton: string;
   setActiveButton: (button: SetStateAction<string>) => void;
-  
 }) => {
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const { user, userDetails } = useContext(AuthContext);
@@ -24,7 +22,7 @@ const NavBar = ({
   const controls = useAnimation();
   const [reqOrTest, setreqOrTest] = useState("Request");
   const [notfications, setNotifications] = useState(false);
-
+ 
   useEffect(() => {
     controls.start({ opacity: isOpen ? 1 : 0, scale: isOpen ? 1 : 0.9 });
   }, [isOpen]);
@@ -34,8 +32,6 @@ const NavBar = ({
       setreqOrTest("Requests");
       setIsOpen(!isOpen);
     }
-
-    
 
     if (button === "testimonies") {
       setreqOrTest("Testimony");
@@ -134,7 +130,7 @@ const NavBar = ({
       </div>
 
       <div className="flex justify-around items-center px-4 py-2 gap-4 relative">
-        {user && (
+        {user  && userDetails?.isUserId && (
           <button
             onClick={() => handleButtonClick("add")}
             className={`flex items-center justify-center  w-[42px] h-[42px] rounded-full transition-colors duration-300 ${
@@ -144,7 +140,7 @@ const NavBar = ({
             <MdAddBox className="text-2xl" />
           </button>
         )}
-        {user && (
+        {user && userDetails?.isUserId && (
           <button
             onClick={() => handleButtonClick("notifications")}
             className={`flex items-center justify-center w-[42px] h-[42px] rounded-full transition-colors duration-300 ${
@@ -186,7 +182,7 @@ const NavBar = ({
             </div>
           </button>
         )}
-        {user && (
+        {user  && (
           <button
             onClick={handleDropdownToggle}
             className="flex items-center justify-center text-white rounded-full transition-colors duration-300 active:text-purp"

@@ -131,8 +131,9 @@ const SetupUser: React.FC<{ setActiveButton: (button: string) => void }> = ({
         { merge: true }
       );
   
+      
+      setActiveButton("requests");
      
-      setActiveButton("profile");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unknown error");
     } finally {

@@ -2,7 +2,7 @@
 import React, { createContext, useState, useEffect } from 'react';
 import { auth, db } from '@/app/firebase/config'; // Ensure you've imported your Firestore instance
 import { onAuthStateChanged } from 'firebase/auth';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, onSnapshot } from 'firebase/firestore';
 
 export const AuthContext = createContext();
 
@@ -11,40 +11,43 @@ export const AuthProvider = ({ children }) => {
   const [userDetails, setUserDetails] = useState(null);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+    const unsubscribeAuth = onAuthStateChanged(auth, (currentUser) => {
       if (currentUser) {
-        // Fetch user details from Firestore
         const userDocRef = doc(db, 'users', currentUser.uid);
-        const userDoc = await getDoc(userDocRef);
 
-        if (userDoc.exists()) {
-          const userData = userDoc.data();
-          setUserDetails({
-            displayName: userData.displayName || currentUser.displayName,
-            img: userData.img || '',
-            isUserId: true,
-            userID: userData.userID || currentUser.uid,
-            uid: currentUser.uid
-          });
-        } else {
-          // If no additional details found, set default values
-          setUserDetails({
-            displayName: currentUser.displayName,
-            img: '',
-            isUserId: false,
-            userID: currentUser.uid,
-            uid: currentUser.uid
-          });
-        }
+        // Listen for real-time updates to the user's Firestore document
+        const unsubscribeSnapshot = onSnapshot(userDocRef, (docSnapshot) => {
+          if (docSnapshot.exists()) {
+            const userData = docSnapshot.data();
+            setUserDetails({
+              displayName: userData.displayName || currentUser.displayName,
+              img: userData.img || '',
+              isUserId: userData.isUserId,
+              userID: userData.userID,
+              uid: currentUser.uid
+            });
+          } else {
+            // If no additional details are found, set default values
+            setUserDetails({
+              displayName: currentUser.displayName,
+              img: '',
+              isUserId: false,
+              userID: null,
+              uid: currentUser.uid
+            });
+          }
+        });
+
+        setUser(currentUser);
+
+        return () => unsubscribeSnapshot(); // Cleanup Firestore listener when the component unmounts or the user changes
       } else {
         setUser(null);
         setUserDetails(null);
       }
-
-      setUser(currentUser);
     });
 
-    return () => unsubscribe();
+    return () => unsubscribeAuth(); // Cleanup the authentication listener when the component unmounts
   }, []);
 
   return (

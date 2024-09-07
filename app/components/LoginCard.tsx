@@ -37,7 +37,7 @@ const LoginCard = () => {
         img: PROFILE_IMG,
         isUserId: false,
         name: user.displayName,
-        userID: "",
+        userID: null,
       };
 
       await setDoc(doc(db, "users", user.uid), userData);
@@ -69,7 +69,7 @@ const LoginCard = () => {
           img: PROFILE_IMG,
           isUserId: false,
           name: user.displayName || "",
-          userID: "",
+          userID: null,
         };
         await setDoc(docRef, userData);
       }

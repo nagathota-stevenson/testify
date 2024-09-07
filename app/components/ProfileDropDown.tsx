@@ -37,13 +37,15 @@ const ProfileDropDown: React.FC<{
   const handleSettings = () => {
     setActiveButton("settings");
     setShowDropdown(false);
-  }
+  };
 
   useEffect(() => {
     if (!user) {
       setShowDropdown(false); // Ensure dropdown is hidden if user logs out
     }
   }, [user]);
+
+  console.log(userDetails);
 
   // Render nothing if loading or userDetails are not available
   if (loading || !showDropdown) return null;
@@ -91,9 +93,11 @@ const ProfileDropDown: React.FC<{
           <h2 className="relative text-center text-blk1 text-xl  font-semibold mb-2 mt-4">
             {userDetails?.displayName || "User"}
           </h2>
-          <p className="text-center text-gray-300 text-sm font-semibold mb-4">
-            @{userDetails?.userID}
-          </p>
+          {userDetails?.isUserId && (
+            <p className="text-center text-gray-300 text-sm font-semibold mb-4">
+              @{userDetails?.userID}
+            </p>
+          )}
 
           <div className="flex w-full flex-col items-center px-4 ">
             <button
@@ -110,9 +114,9 @@ const ProfileDropDown: React.FC<{
               <SlSettings className="size-5" />
               Settings
             </button>
-            
+
             <div className="border-[1px] w-full border-gray-100 mb-2"></div>
-           
+
             <button
               onClick={handleLogout}
               className="w-full text-blk1 rounded-2xl p-2 py-4  hover:bg-gray-100 hover:text-purp flex items-center justify-start gap-2"

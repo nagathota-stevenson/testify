@@ -28,9 +28,7 @@ interface UserData {
   isUserId: boolean;
 }
 
-const ProfileCard: React.FC<{ setActiveButton: (button: string) => void }> = ({
-  setActiveButton,
-}) => {
+const ProfileCard= () => {
   const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");

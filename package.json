@@ -12,6 +12,7 @@
     "@nextui-org/button": "^2.0.37",
     "@nextui-org/system": "^2.2.5",
     "@nextui-org/theme": "^2.2.9",
+    "bad-words": "^4.0.0",
     "chance": "^1.1.12",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",

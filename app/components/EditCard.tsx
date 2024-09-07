@@ -16,6 +16,7 @@ import { RiArrowLeftDownLine } from "react-icons/ri";
 import { MdArrowOutward } from "react-icons/md";
 import "./EditCard.css";
 import { AnimatePresence, motion, useAnimation } from "framer-motion";
+import { Filter } from "bad-words";
 
 interface EditCardProps {
   docId: string;
@@ -31,6 +32,9 @@ const EditCard: React.FC<EditCardProps> = ({ docId, type }) => {
   const [posted, setPosted] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const controls = useAnimation();
+  const filter = new Filter();
+
+  
 
   useEffect(() => {
     controls.start({ opacity: isOpen ? 1 : 0, scale: isOpen ? 1 : 0.9 });
@@ -47,7 +51,7 @@ const EditCard: React.FC<EditCardProps> = ({ docId, type }) => {
           if (docSnap.exists()) {
             setInputText(docSnap.data()?.req || docSnap.data()?.praise || "");
           } else {
-            // console.log("No such document!");
+            console.log("No such document!");
           }
         } catch (error) {
           console.error("Error fetching document: ", error);
@@ -68,7 +72,11 @@ const EditCard: React.FC<EditCardProps> = ({ docId, type }) => {
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+   
+
     setInputText(e.target.value);
+
+    
   };
 
   const handlePost = async () => {
@@ -76,6 +84,8 @@ const EditCard: React.FC<EditCardProps> = ({ docId, type }) => {
       alert("Please enter some text before posting.");
       return;
     }
+
+    const cleanedText = filter.clean(inputText);
 
     setLoading(true);
     setPosted(false);
@@ -102,9 +112,9 @@ const EditCard: React.FC<EditCardProps> = ({ docId, type }) => {
 
       // Conditionally add fields based on the active button
       if (activeButton === "request") {
-        updateData.req = inputText;
+        updateData.req = cleanedText;
       } else if (activeButton === "testimony") {
-        updateData.praise = inputText;
+        updateData.praise = cleanedText;
       }
 
       // Check if the document exists
@@ -147,19 +157,20 @@ const EditCard: React.FC<EditCardProps> = ({ docId, type }) => {
         <div className="flex items-center mb-4">
           {userDetails?.img && (
             <Image
-            src={userDetails.img}
-            width={64}
-            height={64}
-            className="rounded-full aspect-square object-cover"
-            alt="User Image"
-          />
-            
+              src={userDetails.img}
+              width={64}
+              height={64}
+              className="rounded-full aspect-square object-cover"
+              alt="User Image"
+            />
           )}
           <div className="ml-4">
             <h2 className="text-sm lg:text-lg font-semibold text-blk1">
               {userDetails?.displayName}
             </h2>
-            <p className="text-xs lg:text-sm text-gray-500">@{userDetails?.userID}</p>
+            <p className="text-xs lg:text-sm text-gray-500">
+              @{userDetails?.userID}
+            </p>
           </div>
         </div>
         <textarea

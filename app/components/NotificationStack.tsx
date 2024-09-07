@@ -11,6 +11,7 @@ import {
 } from "firebase/firestore";
 import { AuthContext } from "../context/AuthContext";
 import { db } from "../firebase/config";
+import { RiArrowLeftDownLine } from "react-icons/ri";
 
 interface Notification {
   docId: string;
@@ -216,9 +217,18 @@ const NotificationStack = ({}) => {
     <div className="flex flex-col">
       {today.length > 0 && (
         <>
-          <h2 className="text-left text-white text-xs lg:text-base font-semibold mb-2 mt-4">
-            Today
-          </h2>
+          <div className="flex justify-between items-center mb-2 mt-4">
+            <h2 className="text-left text-white text-xs lg:text-base font-semibold">
+              Today
+            </h2>
+            <h2 className="text-right text-white text-xs lg:text-base font-semibold">
+              Prayers Received{" "}
+              <span>
+                <RiArrowLeftDownLine className="text-white inline-block mr-1 size-5" />
+              </span>
+              <span className="text-purp">({today.length})</span>
+            </h2>
+          </div>
           {today.map((notification) => (
             <motion.div
               key={
@@ -245,9 +255,18 @@ const NotificationStack = ({}) => {
       )}
       {yesterday.length > 0 && (
         <>
-          <h2 className="text-left text-white text-xs lg:text-base font-semibold mb-2 mt-4">
-            Yesterday
-          </h2>
+          <div className="flex justify-between items-center mb-2 mt-4">
+            <h2 className="text-left text-white text-xs lg:text-base font-semibold">
+              Yesterday
+            </h2>
+            <h2 className="text-right text-white text-xs lg:text-base font-semibold">
+              Prayers Received{" "}
+              <span>
+                <RiArrowLeftDownLine className="text-white inline-block mr-1 size-5" />
+              </span>
+              <span className="text-purp">({yesterday.length})</span>
+            </h2>
+          </div>
           {yesterday.map((notification) => (
             <motion.div
               key={
@@ -274,9 +293,18 @@ const NotificationStack = ({}) => {
       )}
       {others.length > 0 && (
         <>
-          <h2 className="text-left text-white text-xs lg:text-base font-semibold mb-2 mt-4">
-            Others
-          </h2>
+          <div className="flex justify-between items-center mb-2 mt-4">
+            <h2 className="text-left text-white text-xs lg:text-base font-semibold">
+              Others
+            </h2>
+            <h2 className="text-right text-white text-xs lg:text-base font-semibold">
+              Prayers Received{" "}
+              <span>
+                <RiArrowLeftDownLine className="text-white inline-block mr-1 size-5" />
+              </span>
+              <span className="text-purp">({others.length})</span>
+            </h2>
+          </div>
           {others.map((notification) => (
             <motion.div
               key={

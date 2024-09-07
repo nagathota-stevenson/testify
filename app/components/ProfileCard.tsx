@@ -35,8 +35,8 @@ const ProfileCard: React.FC<{ setActiveButton: (button: string) => void }> = ({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [profileActiveButton, setProfileActiveButton] = useState("Requests");
-  const [userPrayersCount, setUserPrayersCount] = useState(0);
-  const [othersPrayersCount, setOthersPrayersCount] = useState(0);
+  // const [userPrayersCount, setUserPrayersCount] = useState(0);
+  // const [othersPrayersCount, setOthersPrayersCount] = useState(0);
   const [userPraisedCount, setUserPraisedCount] = useState(0);
   const [othersPraisedCount, setOthersPraisedCount] = useState(0);
 
@@ -68,88 +68,88 @@ const ProfileCard: React.FC<{ setActiveButton: (button: string) => void }> = ({
     fetchUserData();
   }, []);
 
-  useEffect(() => {
-    const calculateCounts = async () => {
-      if (auth.currentUser) {
-        const userId = auth.currentUser.uid;
-        const requestsRef = collection(db, "requests");
-        const testimoniesRef = collection(db, "testimonies");
+  // useEffect(() => {
+  //   const calculateCounts = async () => {
+  //     if (auth.currentUser) {
+  //       const userId = auth.currentUser.uid;
+  //       const requestsRef = collection(db, "requests");
+  //       const testimoniesRef = collection(db, "testimonies");
   
-        try {
-          // Fetch documents from requests and testimonies
-          const requestsSnapshot = await getDocs(requestsRef);
-          const testimoniesSnapshot = await getDocs(testimoniesRef);
+  //       try {
+  //         // Fetch documents from requests and testimonies
+  //         const requestsSnapshot = await getDocs(requestsRef);
+  //         const testimoniesSnapshot = await getDocs(testimoniesRef);
   
-          let userPrayersCount = 0;
-          let othersPrayersCount = 0;
-          let userPraisedCount = 0;
-          let othersPraisedCount = 0;
+  //         let userPrayersCount = 0;
+  //         let othersPrayersCount = 0;
+  //         let userPraisedCount = 0;
+  //         let othersPraisedCount = 0;
   
-          // Function to count documents with userId in prayers array
-          const countUserPrayers = (snapshot: QuerySnapshot<DocumentData>) => {
-            let count = 0;
-            snapshot.forEach((doc: DocumentSnapshot<DocumentData>) => {
-              const prayers = doc.data()?.prayers || [];
-              const hasUserPrayed = prayers.some((prayer: { uid: string }) => prayer.uid === userId);
-              if (hasUserPrayed) count++;
-            });
-            return count;
-          };
+  //         // Function to count documents with userId in prayers array
+  //         const countUserPrayers = (snapshot: QuerySnapshot<DocumentData>) => {
+  //           let count = 0;
+  //           snapshot.forEach((doc: DocumentSnapshot<DocumentData>) => {
+  //             const prayers = doc.data()?.prayers || [];
+  //             const hasUserPrayed = prayers.some((prayer: { uid: string }) => prayer.uid === userId);
+  //             if (hasUserPrayed) count++;
+  //           });
+  //           return count;
+  //         };
   
-          // Function to count documents with other users' uid in prayers array
-          const countOthersPrayers = (snapshot: QuerySnapshot<DocumentData>) => {
-            let count = 0;
-            snapshot.forEach((doc: DocumentSnapshot<DocumentData>) => {
-              const prayers = doc.data()?.prayers || [];
-              const hasOtherPrayed = prayers.some((prayer: { uid: string }) => prayer.uid !== userId);
-              if (hasOtherPrayed) count++;
-            });
-            return count;
-          };
+  //         // Function to count documents with other users' uid in prayers array
+  //         const countOthersPrayers = (snapshot: QuerySnapshot<DocumentData>) => {
+  //           let count = 0;
+  //           snapshot.forEach((doc: DocumentSnapshot<DocumentData>) => {
+  //             const prayers = doc.data()?.prayers || [];
+  //             const hasOtherPrayed = prayers.some((prayer: { uid: string }) => prayer.uid !== userId);
+  //             if (hasOtherPrayed) count++;
+  //           });
+  //           return count;
+  //         };
   
-          // Count user prayers and praised counts
-          userPrayersCount += countUserPrayers(requestsSnapshot);
-          userPrayersCount += countUserPrayers(testimoniesSnapshot);
+  //         // Count user prayers and praised counts
+  //         userPrayersCount += countUserPrayers(requestsSnapshot);
+  //         userPrayersCount += countUserPrayers(testimoniesSnapshot);
   
-          // Count others' prayers
-          othersPrayersCount += countOthersPrayers(requestsSnapshot);
-          othersPrayersCount += countOthersPrayers(testimoniesSnapshot);
+  //         // Count others' prayers
+  //         othersPrayersCount += countOthersPrayers(requestsSnapshot);
+  //         othersPrayersCount += countOthersPrayers(testimoniesSnapshot);
   
-          // Similar counting logic for praised if applicable
-          const countUserPraised = (snapshot: QuerySnapshot<DocumentData>) => {
-            let count = 0;
-            snapshot.forEach((doc: DocumentSnapshot<DocumentData>) => {
-              const praises = doc.data()?.praises || [];
-              const hasUserPraised = praises.some((praise: { uid: string }) => praise.uid === userId);
-              if (hasUserPraised) count++;
-            });
-            return count;
-          };
+  //         // Similar counting logic for praised if applicable
+  //         const countUserPraised = (snapshot: QuerySnapshot<DocumentData>) => {
+  //           let count = 0;
+  //           snapshot.forEach((doc: DocumentSnapshot<DocumentData>) => {
+  //             const praises = doc.data()?.praises || [];
+  //             const hasUserPraised = praises.some((praise: { uid: string }) => praise.uid === userId);
+  //             if (hasUserPraised) count++;
+  //           });
+  //           return count;
+  //         };
   
-          userPraisedCount += countUserPraised(requestsSnapshot);
-          userPraisedCount += countUserPraised(testimoniesSnapshot);
+  //         userPraisedCount += countUserPraised(requestsSnapshot);
+  //         userPraisedCount += countUserPraised(testimoniesSnapshot);
   
-          // Count others' praised counts if needed
-          othersPraisedCount += countUserPraised(requestsSnapshot);
-          othersPraisedCount += countUserPraised(testimoniesSnapshot);
+  //         // Count others' praised counts if needed
+  //         othersPraisedCount += countUserPraised(requestsSnapshot);
+  //         othersPraisedCount += countUserPraised(testimoniesSnapshot);
   
-          setUserPrayersCount(userPrayersCount);
-          setOthersPrayersCount(othersPrayersCount);
-          setUserPraisedCount(userPraisedCount);
-          setOthersPraisedCount(othersPraisedCount);
+  //         setUserPrayersCount(userPrayersCount);
+  //         setOthersPrayersCount(othersPrayersCount);
+  //         setUserPraisedCount(userPraisedCount);
+  //         setOthersPraisedCount(othersPraisedCount);
   
-        } catch (err) {
-          if (err instanceof Error) {
-            setError(err.message);
-          }
-        } finally {
-          setLoading(false);
-        }
-      }
-    };
+  //       } catch (err) {
+  //         if (err instanceof Error) {
+  //           setError(err.message);
+  //         }
+  //       } finally {
+  //         setLoading(false);
+  //       }
+  //     }
+  //   };
   
-    calculateCounts();
-  }, []);
+  //   calculateCounts();
+  // }, []);
   
   
   
@@ -196,12 +196,12 @@ const ProfileCard: React.FC<{ setActiveButton: (button: string) => void }> = ({
       <p className="text-center text-gray-300 text-sm lg:text-base font-semibold mb-4">
         @{userData.userID}
       </p>
-      <p className="text-center text-purp text-xs lg:text-base font-semibold mb-4">
+      {/* <p className="text-center text-purp text-xs lg:text-base font-semibold mb-4">
       {othersPrayersCount} Prayers Received
         <RiArrowLeftDownLine className="inline-block ml-1 " /> |{" "}
         {userPrayersCount} Prayers Sent
         <MdArrowOutward className="inline-block ml-1" />{" "}
-      </p>
+      </p> */}
 
       {/* <p className="text-center text-coral text-sm font-semibold mb-4">
         {userPraisedCount} Praised | {othersPraisedCount} You Praised

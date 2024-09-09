@@ -5,7 +5,7 @@ const nextConfig = {
   },
   server: {
     host: true,
-  },
+  }
 };
 
 export default nextConfig;

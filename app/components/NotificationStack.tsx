@@ -106,12 +106,6 @@ const NotificationStack = ({}) => {
             type: "requests",
           }));
 
-          const initialTestimonies = testimoniesSnapshot.docs.map((doc) => ({
-            docId: doc.id,
-            prayers: doc.data().prayers as Prayer[],
-            type: "testimonies",
-          }));
-
           const initialNotifications = [
             ...initialRequests.flatMap((request) =>
               request.prayers.map((prayer) => ({
@@ -119,14 +113,6 @@ const NotificationStack = ({}) => {
                 uid: prayer.uid,
                 notificationTimestamp: prayer.time as Timestamp,
                 type: "requests",
-              }))
-            ),
-            ...initialTestimonies.flatMap((testimony) =>
-              testimony.prayers.map((prayer) => ({
-                docId: testimony.docId,
-                uid: prayer.uid,
-                notificationTimestamp: prayer.time as Timestamp,
-                type: "testimonies",
               }))
             ),
           ];

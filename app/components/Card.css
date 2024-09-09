@@ -1,5 +1,3 @@
-
-
 /* Apply the styles */
 .card {
   box-shadow: 8px 8px 0 var(--purp);
@@ -11,7 +9,7 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  
+
 }
 
 .card:hover {
@@ -24,7 +22,6 @@
   transition: transform 0.2s ease;
   /* Smooth transition */
   cursor: pointer;
-  transform-style: preserve-3d;
   display: flex;
   flex-direction: column;
   overflow: hidden;

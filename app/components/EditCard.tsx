@@ -12,29 +12,26 @@ import { db } from "@/app/firebase/config"; // Adjust path as needed
 import Image from "next/image"; // Adjust path if using different library
 import { RiArrowDropDownLine, RiLoader4Line } from "react-icons/ri";
 import { FaCheckCircle } from "react-icons/fa";
-import { RiArrowLeftDownLine } from "react-icons/ri";
-import { MdArrowOutward } from "react-icons/md";
-import "./EditCard.css";
-import { AnimatePresence, motion, useAnimation } from "framer-motion";
+import { motion, AnimatePresence, useAnimation } from "framer-motion";
 import { Filter } from "bad-words";
+import "./EditCard.css";
 
 interface EditCardProps {
   docId: string;
-  type: "request" | "testimony";
+  type: "req" | "tes"; // Corresponds to 'request' or 'testimony' in the type field
 }
 
 const EditCard: React.FC<EditCardProps> = ({ docId, type }) => {
   const { userDetails } = useContext(AuthContext);
-  const [activeButton, setActiveButton] = useState(type);
-
+  const [activeButton, setActiveButton] = useState(
+    type === "req" ? "request" : "testimony"
+  );
   const [inputText, setInputText] = useState("");
   const [loading, setLoading] = useState(false);
   const [posted, setPosted] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const controls = useAnimation();
   const filter = new Filter();
-
-  
 
   useEffect(() => {
     controls.start({ opacity: isOpen ? 1 : 0, scale: isOpen ? 1 : 0.9 });
@@ -43,13 +40,15 @@ const EditCard: React.FC<EditCardProps> = ({ docId, type }) => {
   useEffect(() => {
     const fetchDocument = async () => {
       if (docId) {
-        const collectionName =
-          activeButton === "request" ? "requests" : "testimonies";
-        const docRef = doc(db, collectionName, docId);
+        const docRef = doc(db, "requests", docId); // Always fetching from 'requests' collection
         try {
           const docSnap = await getDoc(docRef);
           if (docSnap.exists()) {
-            setInputText(docSnap.data()?.req || docSnap.data()?.praise || "");
+            const docData = docSnap.data();
+            setInputText(
+              docData.type === "req" ? docData.req : docData.praise || ""
+            );
+            setActiveButton(docData.type === "req" ? "request" : "testimony");
           } else {
             console.log("No such document!");
           }
@@ -60,7 +59,7 @@ const EditCard: React.FC<EditCardProps> = ({ docId, type }) => {
     };
 
     fetchDocument();
-  }, [docId, activeButton]);
+  }, [docId]);
 
   const handleToggle = () => {
     setIsOpen(!isOpen);
@@ -72,11 +71,7 @@ const EditCard: React.FC<EditCardProps> = ({ docId, type }) => {
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-   
-
     setInputText(e.target.value);
-
-    
   };
 
   const handlePost = async () => {
@@ -90,45 +85,29 @@ const EditCard: React.FC<EditCardProps> = ({ docId, type }) => {
     setLoading(true);
     setPosted(false);
 
-    const collectionName =
-      activeButton === "request" ? "requests" : "testimonies";
-    let docRef;
+    const docRef = doc(
+      db,
+      "requests",
+      docId || doc(collection(db, "requests")).id
+    );
+
+    const updateData: Record<string, any> = {
+      req: cleanedText,
+      uid: userDetails?.uid,
+      time: serverTimestamp(),
+      prayers: [], // Adjust this as needed
+      type: activeButton === "request" ? "req" : "tes",
+    };
 
     try {
-      // If `docId` is provided, use it; otherwise, create a new document with a unique ID
-      if (docId) {
-        docRef = doc(db, collectionName, docId);
-      } else {
-        // Create a new document with a unique ID
-        docRef = doc(collection(db, collectionName));
-      }
-
-      // Create a dynamic update object
-      const updateData: Record<string, any> = {
-        uid: userDetails?.uid,
-        time: serverTimestamp(),
-        prayers: [], // Adjust this as needed
-      };
-
-      // Conditionally add fields based on the active button
-      if (activeButton === "request") {
-        updateData.req = cleanedText;
-      } else if (activeButton === "testimony") {
-        updateData.praise = cleanedText;
-      }
-
-      // Check if the document exists
       const docSnap = await getDoc(docRef);
 
       if (docSnap.exists()) {
-        // If the document exists, update it
         await updateDoc(docRef, updateData);
       } else {
-        // If the document does not exist, create it
         await setDoc(docRef, updateData);
       }
 
-      // Set timeout to simulate loading delay
       setTimeout(() => {
         setLoading(false);
         setPosted(true);
@@ -188,7 +167,7 @@ const EditCard: React.FC<EditCardProps> = ({ docId, type }) => {
           <div className="relative">
             <button
               onClick={handleToggle}
-              className="inline-flex w-36 items-center justify-between rounded-2xl border border-gray-300 shadow-sm px-4 py-2 bg-white text-xs lg:text-base  font-medium text-gray-700 hover:bg-gray-50 transition-colors duration-300"
+              className="inline-flex w-36 items-center justify-between rounded-2xl border border-gray-300 shadow-sm px-4 py-2 bg-white text-xs lg:text-base font-medium text-gray-700 hover:bg-gray-50 transition-colors duration-300"
             >
               {activeButton === "request" ? "Request" : "Testimony"}
               <RiArrowDropDownLine className="ml-2 h-6 w-6" />
@@ -207,7 +186,7 @@ const EditCard: React.FC<EditCardProps> = ({ docId, type }) => {
                       activeButton === "request"
                         ? "bg-purp text-white"
                         : "text-gray-700"
-                    } group flex items-center px-4 py-3 text-xs lg:text-base  w-full text-left hover:bg-purp hover:text-white transition-colors duration-300`}
+                    } group flex items-center px-4 py-3 text-xs lg:text-base w-full text-left hover:bg-purp hover:text-white transition-colors duration-300`}
                   >
                     Request
                   </button>
@@ -217,7 +196,7 @@ const EditCard: React.FC<EditCardProps> = ({ docId, type }) => {
                       activeButton === "testimony"
                         ? "bg-coral text-white"
                         : "text-gray-700"
-                    } group flex items-center px-4 py-3 text-xs lg:text-base  w-full text-left hover:bg-coral hover:text-white transition-colors duration-300`}
+                    } group flex items-center px-4 py-3 text-xs lg:text-base w-full text-left hover:bg-coral hover:text-white transition-colors duration-300`}
                   >
                     Testimony
                   </button>
@@ -242,20 +221,23 @@ const EditCard: React.FC<EditCardProps> = ({ docId, type }) => {
             )}
           </button>
         </div>
-        {posted && (
-          <div
-            className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-75 rounded-2xl"
-            onClick={() => setPosted(false)}
-          >
-            <div className="text-center flex items-center">
-              <FaCheckCircle className="text-green-500 text-4xl mr-2" />
-              <p className="text-xs lg:text-base font-semibold text-blk1">
-                {activeButton.charAt(0).toUpperCase() + activeButton.slice(1)}{" "}
-                Posted!
-              </p>
-            </div>
-          </div>
-        )}
+        <AnimatePresence>
+          {posted && (
+            <motion.div
+              className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-75 rounded-2xl"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setPosted(false)}
+            >
+              <div className="text-center flex items-center">
+                
+                <p className="text-xs text-blk1 lg:text-base font-semibold">Posted </p>
+                <FaCheckCircle className="text-green-400 text-4xl ml-2" />
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </motion.div>
     </AnimatePresence>
   );

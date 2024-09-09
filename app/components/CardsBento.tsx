@@ -1,28 +1,58 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useState, useEffect, useContext, useCallback } from "react";
+import { db } from "@/app/firebase/config";
 import {
-  collection,
-  getDocs,
-  doc as firestoreDoc,
+  doc,
   getDoc,
   query,
   where,
-  CollectionReference,
-  Query,
   orderBy,
-  onSnapshot,
+  limit,
+  startAfter,
+  collection,
+  getDocs,
 } from "firebase/firestore";
-import { db } from "@/app/firebase/config";
-import Card from "../components/Card";
 import { AuthContext } from "@/app/context/AuthContext";
-import { AnimatedList } from "../components/magicui/animated-list";
-import { AnimatePresence, motion } from "framer-motion";
+import Card from "../components/Card";
+import { motion } from "framer-motion";
+
+const GridCard: React.FC<{
+  data: Request & User;
+  onDelete: (docId: string) => void;
+  isUser: boolean;
+  uid?: string;
+}> = ({ data, onDelete, isUser, uid }) => (
+  <motion.div
+    key={data.id}
+    initial={{ scale: 0, opacity: 0 }}
+    animate={{ scale: 1, opacity: 1, originY: 0 }}
+    exit={{ scale: 0, opacity: 0 }}
+    transition={{ type: "spring", stiffness: 350, damping: 40 }}
+    className="card-item"
+  >
+    <Card
+      userImage={data.img || "/default-user.png"}
+      userName={data.displayName}
+      userHandle={`@${data.userID}`}
+      prayerDate={new Date(data.time.seconds * 1000).toLocaleString("en-US")}
+      prayerRequest={data.req}
+      prayersCount={`${data.prayers.length}`}
+      prayers={data.prayers}
+      type={data.type}
+      docId={data.id}
+      isUser={isUser}
+      uid={uid}
+      onDelete={onDelete}
+    />
+  </motion.div>
+);
 
 type Request = {
   id: string;
   uid: string;
+  type: "req" | "tes";
   req: string;
-  time: any; // Use 'firebase.firestore.Timestamp' if using Firestore Timestamp
-  prayers: any; // Assuming this is an array of prayer IDs or similar
+  time: any; // Firestore Timestamp
+  prayers: any[]; // Array of prayer data
 };
 
 type User = {
@@ -32,103 +62,141 @@ type User = {
 };
 
 type CardBentoProps = {
-  collectionName: "requests" | "testimonies";
-  filterByCurrentUser?: boolean;
+  filterByType?: "req" | "tes" | "all";
+  filterByCurrentUser: boolean;
   homePage?: boolean;
 };
 
 const CardBento: React.FC<CardBentoProps> = ({
-  collectionName,
+  filterByType,
   filterByCurrentUser,
   homePage,
 }) => {
   const [items, setItems] = useState<(Request & User)[]>([]);
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
   const { user, userDetails } = useContext(AuthContext);
-  const animations = {
-    initial: { scale: 0.8, opacity: 0 },
-    animate: { scale: 1, opacity: 1, originY: 0 },
-    exit: { scale: 0, opacity: 0 },
-    transition: { type: "spring", stiffness: 350, damping: 40 },
-  };
 
-  useEffect(() => {
-    // Build base query
-    const baseCollectionRef = collection(
-      db,
-      collectionName
-    ) as CollectionReference<Request>;
-    let collectionQuery: Query<Request> = baseCollectionRef;
+  const fetchItems = useCallback(async () => {
+    if (loading) return;
+    setLoading(true);
 
-    if (filterByCurrentUser) {
-      collectionQuery = query(collectionQuery, where("uid", "==", user.uid));
-    }
+    try {
+      let collectionQuery = query(
+        collection(db, "requests"),
+        orderBy("time", "desc"),
+        limit(9) 
+      );
 
-    collectionQuery = query(collectionQuery, orderBy("time", "desc"));
+      if (filterByType && filterByType !== "all") {
+        collectionQuery = query(
+          collectionQuery,
+          where("type", "==", filterByType)
+        );
+      }
 
-    // Set up a real-time listener
-    const unsubscribe = onSnapshot(collectionQuery, async (snapshot) => {
-      // console.log("Snapshot received:", snapshot); // Debugging line
-      const itemsList: (Request & User)[] = await Promise.all(
+      if (filterByCurrentUser && user?.uid) {
+        collectionQuery = query(collectionQuery, where("uid", "==", user.uid));
+      }
+
+      if (page > 1) {
+        const lastVisibleDoc =
+          items.length > 0 ? items[items.length - 1].id : null;
+        if (lastVisibleDoc) {
+          const lastVisibleSnapshot = await getDoc(
+            doc(db, "requests", lastVisibleDoc)
+          );
+          collectionQuery = query(
+            collectionQuery,
+            startAfter(lastVisibleSnapshot)
+          );
+        }
+      }
+
+      const snapshot = await getDocs(collectionQuery);
+
+      if (snapshot.empty) {
+        setHasMore(false); // No more items to load
+        return;
+      }
+
+      const newItems: (Request & User)[] = await Promise.all(
         snapshot.docs.map(async (itemDocument) => {
           const itemData = itemDocument.data() as Request;
-          const userDocRef = firestoreDoc(db, "users", itemData.uid);
-          const userDoc = await getDoc(userDocRef);
-
-          let userData: User = {
-            displayName: "Unknown User",
-            img: "/default-user.png",
-            userID: "",
-          };
-
-          if (userDoc.exists()) {
-            userData = userDoc.data() as User;
-          }
-
+          const userDoc = await getDoc(doc(db, "users", itemData.uid));
           return {
             ...itemData,
-            ...userData,
+            ...(userDoc.exists()
+              ? (userDoc.data() as User)
+              : {
+                  displayName: "Unknown User",
+                  img: "/default-user.png",
+                  userID: "",
+                }),
             id: itemDocument.id,
           };
         })
       );
 
-      // console.log("Items list:", itemsList); // Debugging line
-      setItems(itemsList);
-    });
+      setItems((prevItems) => {
+        const existingIds = new Set(prevItems.map((item) => item.id));
+        const filteredNewItems = newItems.filter(
+          (item) => !existingIds.has(item.id)
+        );
+        return [...prevItems, ...filteredNewItems];
+      });
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [loading, filterByType, filterByCurrentUser, user?.uid, page, items]);
 
-    // Clean up the listener on component unmount
-    return () => unsubscribe();
-  }, [collectionName, filterByCurrentUser, user]);
+  useEffect(() => {
+    fetchItems();
+  }, [fetchItems, page]);
+
+  const handlePageChange = (newPage: number) => {
+    if (newPage > 0 && (hasMore || newPage > page)) {
+      setPage(newPage);
+    }
+  };
+
+  const handleDelete = useCallback((docId: string) => {
+    setItems((prevItems) => prevItems.filter((item) => item.id !== docId));
+  }, []);
 
   return (
     <section
-      className={`bg-blk1 w-screen h-screen flex items-start pb-24 p-4 justify-center ${
-        homePage ? "pt-24" : "pt-4"
+      className={`bg-blk1 w-screen h-screen mb-8 flex flex-col items-center justify-between pb-24 p-4 ${
+        homePage ? "pt-32" : "pt-4"
       }`}
     >
-      <AnimatePresence>
-        <div className="lg:columns-3 sm:columns-2 row-auto gap-8 p-4">
+      {items.length === 0 ? (
+        <p>No items found.</p>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-8 px-4 pb-8">
           {items.map((item) => (
-            <motion.div className="mb-8" key={item.id} {...animations}>
-              <Card
-                userImage={item.img || "/default-user.png"}
-                userName={item.displayName}
-                userHandle={`@${item.userID}`}
-                prayerDate={new Date(item.time.seconds * 1000).toLocaleString(
-                  "en-US"
-                )}
-                prayerRequest={item.req}
-                prayersCount={`${item.prayers.length}`}
-                prayers={item.prayers}
-                type={collectionName}
-                docId={item.id}
-                isUser={filterByCurrentUser}
-                uid={userDetails?.uid}
-              />
-            </motion.div>
+            <GridCard
+              key={item.id}
+              data={item}
+              onDelete={handleDelete}
+              isUser={filterByCurrentUser}
+              uid={userDetails?.uid}
+            />
           ))}
         </div>
-      </AnimatePresence>
+      )}
+      { hasMore  && <div className="pagination-controls p-4">
+        <button
+          
+          onClick={() => handlePageChange(page + 1)}
+          className="border-2 rounded-2xl py-[10px] border-white p-4 hover:bg-purp"
+        >
+         Load More
+        </button>
+      </div> }
     </section>
   );
 };

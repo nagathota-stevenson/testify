@@ -5,6 +5,7 @@ import { PiHandsPrayingFill } from "react-icons/pi";
 import { AnimatedSubscribeButton } from "./magicui/animated-subscribe-button";
 import { MdDelete } from "react-icons/md";
 import { FaHands } from "react-icons/fa";
+import { AnimatePresence, motion } from "framer-motion";
 import {
   doc,
   updateDoc,
@@ -15,11 +16,10 @@ import {
   getDoc,
 } from "firebase/firestore";
 import { db } from "@/app/firebase/config";
-import { AnimatePresence, motion } from "framer-motion";
 
 type Prayer = {
   uid: string;
-  time?: Timestamp; // You can define a more specific type if needed
+  time?: Timestamp;
 };
 
 type CardProps = {
@@ -29,11 +29,12 @@ type CardProps = {
   prayerDate?: string;
   prayerRequest?: string;
   prayersCount?: string;
-  type?: "requests" | "testimonies"; // Updated type definition
-  prayers?: (Prayer | string)[]; // prayers is an array of strings
-  isUser?: boolean;
+  type?: "req" | "tes";
+  prayers?: (Prayer | string)[];
+  isUser?: boolean | undefined;
   docId?: string;
-  uid?: string; // uid is a string
+  uid?: string;
+  onDelete?: (docId: string) => void;
 };
 
 const Card = ({
@@ -43,14 +44,14 @@ const Card = ({
   prayerDate = "",
   prayerRequest = "",
   prayersCount = "",
-  type = "requests", // Default to "requests"
-  prayers = [], // Array of strings
+  type = "req",
+  prayers = [],
   isUser = false,
-  uid = "", // String uid
-  docId = "", // Document ID for Firebase
+  uid = "",
+  docId = "",
+  onDelete,
 }: CardProps) => {
   const [subscribe, setSubscribe] = useState(false);
-  const collectionName = type === "requests" ? "requests" : "testimonies"; // Collection based on type
   const [showConfirm, setShowConfirm] = useState(false);
 
   const handleDeleteClick = () => {
@@ -58,12 +59,11 @@ const Card = ({
   };
 
   const handleConfirmDelete = async () => {
-    const docRef = doc(db, collectionName, docId); // Get document reference
-
+    const docRef = doc(db, "requests", docId);
     try {
-      await deleteDoc(docRef); // Delete the document from Firestore
-      // // console.log("Document deleted successfully");
-      setShowConfirm(false); // Hide confirmation overlay
+      await deleteDoc(docRef);
+      setShowConfirm(false);
+      if (onDelete) onDelete(docId);
     } catch (error) {
       console.error("Error deleting document:", error);
       alert("There was an error deleting the document. Please try again.");
@@ -71,60 +71,42 @@ const Card = ({
   };
 
   const handleCancelDelete = () => {
-    setShowConfirm(false); // Hide confirmation overlay
+    setShowConfirm(false);
   };
 
   useEffect(() => {
-    const isSubscribed = prayers.some((prayer) => {
-      // Check if prayer is an object with a uid property
-      return typeof prayer === "object" && "uid" in prayer
+    const isSubscribed = prayers.some((prayer) =>
+      typeof prayer === "object" && "uid" in prayer
         ? prayer.uid === uid
-        : prayer === uid;
-    });
-
-    setSubscribe(isSubscribed); // Set subscribe to true if uid is found in prayers
+        : prayer === uid
+    );
+    setSubscribe(isSubscribed);
   }, [prayers, uid]);
 
-  // Handle Subscribe (Add uid to prayers array)
   const handleSubscribe = async () => {
-    const docRef = doc(db, collectionName, docId); // Get document reference
-
+    const docRef = doc(db, "requests", docId);
     try {
-      // First, create the object with serverTimestamp
       const timestamp = Timestamp.now();
-
-      // First, set the serverTimestamp directly in Firestore
       await updateDoc(docRef, {
-        prayers: arrayUnion({
-          uid: uid,
-          time: timestamp, // store it as a reference first
-        }),
+        prayers: arrayUnion({ uid: uid, time: timestamp }),
       });
-
-      setSubscribe(true); // Update state locally
+      setSubscribe(true);
     } catch (error) {
       console.error("Error subscribing:", error);
     }
   };
 
-  // Handle Unsubscribe (Remove uid from prayers array)
   const handleUnsubscribe = async () => {
-    const docRef = doc(db, collectionName, docId); // Get document reference
-
+    const docRef = doc(db, "requests", docId);
     try {
-      // Retrieve the document to get the prayers array
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
         const data = docSnap.data();
         const updatedPrayers = data.prayers.filter(
           (prayer: any) => prayer.uid !== uid
         );
-
-        // Update Firestore with the filtered array
-        await updateDoc(docRef, {
-          prayers: updatedPrayers,
-        });
-        setSubscribe(false); // Update local state
+        await updateDoc(docRef, { prayers: updatedPrayers });
+        setSubscribe(false);
       }
     } catch (error) {
       console.error("Error unsubscribing:", error);
@@ -140,9 +122,8 @@ const Card = ({
 
   return (
     <div
-      className={`bg-white rounded-2xl border-solid border-2 border-blk1 flex flex-col p-4 ${
-        type === "requests" ? "card" : "card-testimony"
-      }`}
+      className={`bg-white rounded-2xl border-solid border-2 border-blk1 flex flex-col p-4 h-[350px]  
+          ${type === "req" ? "card" : "card-testimony"}`}
     >
       <AnimatePresence>
         {showConfirm && (
@@ -150,10 +131,10 @@ const Card = ({
             className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-75 rounded-2xl z-10"
             {...animations}
           >
-            <div className="p-8 px-2 bg-gray-100 border-solid border-2 border-blk1  rounded-2xl text-center">
+            <div className="p-8 px-2 bg-gray-100 border-solid border-2 border-blk1 rounded-2xl text-center">
               <p className="text-base font-semibold text-blk1 mb-4">
                 Would you like to delete this{" "}
-                {type === "requests" ? "Request" : "Testimony"}?
+                {type === "req" ? "Request" : "Testimony"}?
               </p>
               <div className="flex justify-center gap-4">
                 <button
@@ -174,7 +155,7 @@ const Card = ({
         )}
       </AnimatePresence>
 
-      <div className="relative">
+      <div className="flex flex-col h-full">
         <div className="flex items-center mb-4">
           <div className="relative w-16 h-16 rounded-full overflow-hidden">
             <Image
@@ -186,7 +167,9 @@ const Card = ({
             />
           </div>
           <div className="ml-4">
-            <h2 className="text-sm lg:text-lg font-semibold text-blk1">{userName}</h2>
+            <h2 className="text-sm lg:text-lg font-semibold text-blk1">
+              {userName}
+            </h2>
             <p className="text-xs lg:text-base text-gray-500">{userHandle}</p>
             <p className="text-[10px] text-gray-300">{prayerDate}</p>
           </div>
@@ -197,15 +180,19 @@ const Card = ({
           )}
         </div>
 
-        <div className="flex-grow mb-4 overflow-hidden">
-          <p className="text-gray-700 text-xs lg:text-base text-balance">{prayerRequest}</p>
+        <div className="relative flex-grow mb-4 overflow-hidden">
+          <div className="relative h-full overflow-auto pr-4 pb-16">
+            <p className="text-gray-700 text-xs lg:text-base text-balance">
+              {prayerRequest}
+            </p>
+          </div>
+          <div className="absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-white to-transparent pointer-events-none z-10"></div>
         </div>
 
-        <div>
-          <div className="border-t border-gray-300"></div>
-          <div className="flex justify-between items-center pt-4">
+        <div className="border-t border-gray-300 pt-4 mt-auto">
+          <div className="flex justify-between items-center">
             <span className="text-blk1 font-semibold text-xs lg:text-base">
-              {type === "requests"
+              {type === "req"
                 ? `${prayersCount} Prayed`
                 : `${prayersCount} Praised`}
             </span>
@@ -217,14 +204,14 @@ const Card = ({
                 subscribeStatus={subscribe}
                 initialText={
                   <span className="group flex items-center justify-center gap-2 text-xs lg:text-base">
-                    {type === "requests" ? <PiHandsPrayingFill /> : <FaHands />}
-                    {type === "requests" ? "Pray" : "Praise"}
+                    {type === "req" ? <PiHandsPrayingFill /> : <FaHands />}
+                    {type === "req" ? "Pray" : "Praise"}
                   </span>
                 }
                 changeText={
                   <span className="group flex items-center justify-center gap-2 text-xs lg:text-base">
-                    {type === "requests" ? <PiHandsPrayingFill /> : <FaHands />}
-                    {type === "requests" ? "Prayed!" : "Praised!"}
+                    {type === "req" ? <PiHandsPrayingFill /> : <FaHands />}
+                    {type === "req" ? "Prayed!" : "Praised!"}
                   </span>
                 }
                 onClick={subscribe ? handleUnsubscribe : handleSubscribe}

@@ -10,7 +10,7 @@ const PostPage = () => {
       <NavBar />
 
       <section className="bg-blk1 w-screen h-screen flex items-center justify-center pt-24 pb-24">
-        <EditCard docId={""} type={"request"} />
+        <EditCard docId={""} type={"req"} />
       </section>
     </>
   );

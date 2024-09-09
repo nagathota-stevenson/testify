@@ -1,41 +1,34 @@
 // pages/profile/index.tsx
 "use client";
 import React, { useState, useContext } from "react";
-import { AuthContext } from "../context/AuthContext";
-import SetupUser from "../components/SetupUser";
-import CardBento from "../components/CardsBento";
-import ProfileLayout from "../components/ProfileLayout";
+import { AuthContext } from "../../context/AuthContext";
+import SetupUser from "../../components/SetupUser";
+import CardBento from "../../components/CardsBento";
+import ProfileLayout from "../../components/ProfileLayout";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation"; // Import useRouter
-import NavBar from "../components/NavBar";
 
 const ProfilePage = () => {
   const { userDetails, user } = useContext(AuthContext);
-  const [profileActiveButton, setProfileActiveButton] = useState("All");
+  const [profileActiveButton, setProfileActiveButton] = useState("Testimonies");
 
   const router = useRouter(); // Initialize the router
 
   // Check if user is not authenticated
   if (!user) {
     return (
-      <> 
-      <NavBar />
       <section className="bg-blk1 w-screen h-screen flex items-center justify-center pt-24 pb-24">
-        <p> Loading.. </p>
+        <p> Loading... </p>
       </section>
-      </>
     );
   }
 
   // If the user hasn't set up their profile yet
   if (!userDetails?.isUserId) {
     return (
-      <> 
-      <NavBar />
       <section className="bg-blk1 w-screen h-screen flex items-center justify-center pt-24 pb-24">
         <SetupUser />
       </section>
-      </>
     );
   }
 
@@ -86,7 +79,7 @@ const ProfilePage = () => {
         exit={{ scale: 0, opacity: 0 }}
         transition={{ type: "spring", stiffness: 350, damping: 40 }}
       >
-        <CardBento filterByCurrentUser={true} filterByType="all" />
+        <CardBento filterByCurrentUser={true} filterByType="tes" />
       </motion.div>
     </ProfileLayout>
   );

@@ -86,7 +86,7 @@ const CardBento: React.FC<CardBentoProps> = ({
       let collectionQuery = query(
         collection(db, "requests"),
         orderBy("time", "desc"),
-        limit(9) 
+        limit(9)
       );
 
       if (filterByType && filterByType !== "all") {
@@ -188,15 +188,24 @@ const CardBento: React.FC<CardBentoProps> = ({
           ))}
         </div>
       )}
-      { hasMore  && <div className="pagination-controls p-4">
-        <button
-          
-          onClick={() => handlePageChange(page + 1)}
-          className="border-2 rounded-2xl py-[10px] border-white p-4 hover:bg-purp"
-        >
-         Load More
-        </button>
-      </div> }
+      {hasMore && (
+        <div className="pagination-controls p-4">
+          <button
+            onClick={() => handlePageChange(page + 1)}
+            className={`border-2 rounded-2xl py-[10px] transition-all duration-300  p-4 ${
+              filterByType === "req"
+                ? "hover:bg-purp hover:border-purp"
+                : filterByType === "tes"
+                ? "hover:bg-coral hover:border-coral"
+                : filterByType === "all"
+                ? "hover:bg-white hover:text-blk1"
+                : "hover:bg-gray"
+            }`}
+          >
+            Load More
+          </button>
+        </div>
+      )}
     </section>
   );
 };

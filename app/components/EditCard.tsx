@@ -80,7 +80,9 @@ const EditCard: React.FC<EditCardProps> = ({ docId, type }) => {
       return;
     }
 
-    const cleanedText = filter.clean(inputText);
+    const cleanedText = inputText;
+
+    // const cleanedText = filter.clean(inputText);
 
     setLoading(true);
     setPosted(false);

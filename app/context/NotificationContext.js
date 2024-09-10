@@ -1,5 +1,5 @@
 "use client";
-// NotificationsProvider.tsx
+
 import React, { createContext, useState, useContext, useEffect, useRef } from "react";
 import {
   onSnapshot,

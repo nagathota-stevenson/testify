@@ -203,7 +203,7 @@ const CardBento: React.FC<CardBentoProps> = ({
         <div className="pagination-controls p-4">
           <button
             onClick={() => handlePageChange(page + 1)}
-            className={`border-2 rounded-2xl py-[10px] transition-all duration-300  p-4 ${
+            className={`border-2 rounded-2xl py-[10px] text-white transition-all duration-300  p-4 ${
               filterByType === "req"
                 ? "hover:bg-purp hover:border-purp"
                 : filterByType === "tes"

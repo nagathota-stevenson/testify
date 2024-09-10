@@ -11,7 +11,7 @@ export default function Home() {
       <main className="bg-blk1">
         <NavBar />
         <section className="bg-blk1 w-screen h-screen flex items-center justify-center pt-24 pb-24">
-          <CardBento filterByType="all" homePage={true} filterByCurrentUser={false} />
+          <CardBento filterByType="all" filterByUserId="" homePage={true} filterByCurrentUser={false} />
         </section>
       </main>
     </AuthProvider>

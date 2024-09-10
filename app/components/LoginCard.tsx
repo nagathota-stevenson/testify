@@ -1,5 +1,4 @@
-/* eslint-disable @next/next/no-img-element */
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import "./LoginCard.css";
 import { TITLE, PROFILE_IMG } from "../constants";
 import { auth, provider } from "@/app/firebase/config";
@@ -13,13 +12,63 @@ import { FaGoogle } from "react-icons/fa";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 import { motion } from "framer-motion";
 
+// Define a type for error state
+type ErrorState = {
+  field: "email" | "password" | null;
+  message: string;
+};
+
+const getErrorMessage = (error: any): ErrorState => {
+  switch (error.code) {
+    case "auth/email-already-in-use":
+      return {
+        field: "email",
+        message:
+          "This email is already in use. Please use a different email address.",
+      };
+    case "auth/invalid-email":
+      return {
+        field: "email",
+        message:
+          "The email address is not valid. Please enter a valid email address.",
+      };
+    case "auth/weak-password":
+      return {
+        field: "password",
+        message: "The password is too weak. Please choose a stronger password.",
+      };
+    case "auth/user-not-found":
+      return {
+        field: "email",
+        message:
+          "No account found with this email. Please check the email and try again.",
+      };
+    case "auth/wrong-password":
+      return {
+        field: "password",
+        message: "Incorrect password. Please check the password and try again.",
+      };
+    case "auth/invalid-credential":
+      return {
+        field: "email",
+        message: "Invalid credentials. Please check your input and try again.",
+      };
+    default:
+      return {
+        field: null,
+        message: "An unknown error occurred. Please try again later.",
+      };
+  }
+};
+
 const LoginCard = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isSigningUp, setIsSigningUp] = useState(true);
+  const [isSigningUp, setIsSigningUp] = useState(false);
   const [showPassword, setshowPassword] = useState(false);
+  const [error, setError] = useState<ErrorState>({ field: null, message: "" }); // State to hold error messages
 
-  const handleSignUp = async (e: { preventDefault: () => void }) => {
+  const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
@@ -28,15 +77,13 @@ const LoginCard = () => {
         email,
         password
       );
-
       const user = userCredential.user;
-
       const db = getFirestore();
 
       const userData = {
         img: PROFILE_IMG,
         isUserId: false,
-        name: user.displayName,
+        name: user.displayName || "",
         userID: null,
       };
 
@@ -44,13 +91,9 @@ const LoginCard = () => {
 
       setEmail("");
       setPassword("");
-      // console.log("User signed up and added to Firestore successfully!");
+      setError({ field: null, message: "" }); // Clear error on successful sign up
     } catch (error) {
-      if (error instanceof Error) {
-        console.error("Error during sign up:", error.message);
-      } else {
-        console.error("Unknown error during sign up");
-      }
+      setError(getErrorMessage(error));
     }
   };
 
@@ -60,7 +103,6 @@ const LoginCard = () => {
       const user = result.user;
       const db = getFirestore();
 
-      // Check if user exists in Firestore, add if not
       const docRef = doc(db, "users", user.uid);
       const docSnap = await getDoc(docRef);
 
@@ -73,30 +115,22 @@ const LoginCard = () => {
         };
         await setDoc(docRef, userData);
       }
-
-      // console.log("User signed in with Google successfully!");
+      setError({ field: null, message: "" }); // Clear error on successful Google sign in
     } catch (error) {
-      if (error instanceof Error) {
-        console.error("Error during Google sign in:", error.message);
-      } else {
-        console.error("Unknown error during Google sign in");
-      }
+      setError(getErrorMessage(error));
     }
   };
 
-  const handleLogin = async (e: { preventDefault: () => void }) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+
     try {
       await signInWithEmailAndPassword(auth, email, password);
       setEmail("");
       setPassword("");
-      // console.log("User logged in successfully!");
+      setError({ field: null, message: "" }); // Clear error on successful login
     } catch (error) {
-      if (error instanceof Error) {
-        console.error("Error during login:", error.message);
-      } else {
-        console.error("Unknown error during login");
-      }
+      setError(getErrorMessage(error));
     }
   };
 
@@ -106,7 +140,7 @@ const LoginCard = () => {
 
   return (
     <motion.div
-      className="login-card bg-white w-[400px] lg:w-[500px]  text-xs lg:text-base  rounded-2xl border-2 border-blk1 flex flex-col p-8"
+      className="login-card bg-white w-[400px] lg:w-[550px] text-xs lg:text-base rounded-2xl border-2 border-blk1 flex flex-col p-8"
       initial={{ scale: 0.5, opacity: 0 }}
       animate={{ scale: 1, opacity: 1, originY: 0 }}
       exit={{ scale: 0, opacity: 0 }}
@@ -125,21 +159,32 @@ const LoginCard = () => {
         onSubmit={isSigningUp ? handleSignUp : handleLogin}
       >
         <label className="text-start text-blk1 mb-2">Email</label>
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="p-[12px] border-2 border-gray-300 rounded-2xl text-blk1 focus:outline-none focus:ring-0 focus:border-purp"
-        />
+
+        <div className="relative mb-4">
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className={`p-[12px] border-2 border-gray-300 rounded-2xl text-blk1 focus:outline-none focus:ring-0 focus:border-purp ${
+              error.field === "email" ? "border-red-500" : ""
+            } w-full`}
+          />
+          {error.field === "email" && (
+            <p className="text-red-500 text-xs mt-2">{error.message}</p>
+          )}
+        </div>
+
         <label className="text-start text-blk1 mt-4 mb-2">Password</label>
         <div className="relative mb-8">
           <input
             type={showPassword ? "text" : "password"}
-            placeholder={isSigningUp ? "Create a password" : "Enter"}
+            placeholder={isSigningUp ? "Create a password" : "Enter password"}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="p-[12px] border-2 border-gray-300 rounded-2xl text-blk1 focus:outline-none focus:ring-0 focus:border-purp w-full"
+            className={`p-[12px] border-2 border-gray-300 rounded-2xl text-blk1 focus:outline-none focus:ring-0 focus:border-purp w-full ${
+              error.field === "password" ? "border-red-500" : ""
+            }`}
           />
           <span
             className="absolute right-4 top-1/2 transform -translate-y-1/2 cursor-pointer"
@@ -151,6 +196,11 @@ const LoginCard = () => {
               <IoMdEyeOff className="text-gray-300 size-5" />
             )}
           </span>
+          {error.field === "password" && (
+            <p className="text-red-500 text-xs absolute right-0 top-full mt-1">
+              {error.message}
+            </p>
+          )}
         </div>
 
         <button

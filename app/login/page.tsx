@@ -18,7 +18,7 @@ const LoginPage = () => {
   return (
     <>
       <NavBar />
-      <section className="bg-blk1 w-screen h-screen flex items-center justify-center pt-24 pb-24">
+      <section className="bg-blk1 w-screen h-screen flex items-center justify-center pt-12 ">
         <div className="flex flex-col items-center">
           <LoginCard />
         </div>

@@ -18,7 +18,6 @@ const ProfilePage = ({ params }: ProfilePageProps) => {
 
   const router = useRouter(); 
   
-  console.log(params.userId);
 
   if (!user) {
     return (

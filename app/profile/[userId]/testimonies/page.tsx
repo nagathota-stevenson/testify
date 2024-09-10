@@ -20,7 +20,7 @@ const ProfilePage = ({ params }: ProfilePageProps) => {
 
   const router = useRouter(); 
 
-  console.log(params.userId);
+
 
   // Check if user is not authenticated
   if (!user) {

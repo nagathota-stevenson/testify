@@ -1,6 +1,5 @@
 "use client";
 import React from "react";
-import NotificationCard from "../components/NotificationCard";
 import NotificationStack from "../components/NotificationStack";
 import NavBar from "../components/NavBar";
 

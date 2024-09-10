@@ -4,14 +4,17 @@ import { motion } from "framer-motion";
 import {
   collection,
   getDocs,
-  onSnapshot,
   query,
-  Timestamp,
   where,
+  Timestamp,
+  doc,
+  updateDoc,
+  writeBatch,
 } from "firebase/firestore";
 import { AuthContext } from "../context/AuthContext";
 import { db } from "../firebase/config";
 import { RiArrowLeftDownLine } from "react-icons/ri";
+import { useNotifications } from "@/app/context/NotificationContext"; // Import the context hook
 
 interface Notification {
   docId: string;
@@ -21,6 +24,7 @@ interface Notification {
 }
 
 type Prayer = {
+  id: any;
   uid: string;
   time?: Timestamp;
 };
@@ -57,7 +61,6 @@ const categorizeNotifications = (notifications: Notification[]) => {
     }
   });
 
-  // Sort notifications by timestamp within each category
   today.sort(
     (a, b) =>
       b.notificationTimestamp.toMillis() - a.notificationTimestamp.toMillis()
@@ -74,38 +77,32 @@ const categorizeNotifications = (notifications: Notification[]) => {
   return { today, yesterday, others };
 };
 
-const NotificationStack = ({}) => {
+const NotificationStack = () => {
   const { user } = useContext(AuthContext);
   const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [newNotificationIds, setNewNotificationIds] = useState<Set<string>>(
-    new Set()
-  );
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (user) {
-      const requestsQuery = query(
-        collection(db, "requests"),
-        where("uid", "==", user.uid)
-      );
-      const testimoniesQuery = query(
-        collection(db, "testimonies"),
-        where("uid", "==", user.uid)
-      );
-
-      const fetchNotifications = async () => {
+    const fetchNotifications = async () => {
+      if (user) {
         try {
-          const [requestsSnapshot, testimoniesSnapshot] = await Promise.all([
+          
+          const requestsQuery = query(
+            collection(db, "requests"),
+            where("uid", "==", user.uid)
+          );
+
+          const [requestsSnapshot] = await Promise.all([
             getDocs(requestsQuery),
-            getDocs(testimoniesQuery),
           ]);
 
           const initialRequests = requestsSnapshot.docs.map((doc) => ({
             docId: doc.id,
-            prayers: doc.data().prayers as Prayer[],
+            prayers: doc.data().prayers as Prayer[], // Ensure this is an array of maps
             type: "requests",
           }));
 
+          // Combine all notifications
           const initialNotifications = [
             ...initialRequests.flatMap((request) =>
               request.prayers.map((prayer) => ({
@@ -118,83 +115,35 @@ const NotificationStack = ({}) => {
           ];
 
           setNotifications(initialNotifications);
-          setNewNotificationIds(
-            new Set(initialNotifications.map((n) => n.docId))
-          );
+        
+          // Update isViewed to true for all prayers
+          const batch = writeBatch(db);
 
-          const unsubscribeRequests = onSnapshot(requestsQuery, (snapshot) => {
-            const requestNotifications = snapshot.docs.flatMap((doc) => {
-              const request = {
-                docId: doc.id,
-                prayers: doc.data().prayers as Prayer[],
-                type: "requests",
-              };
-
-              return request.prayers.map((prayer) => ({
-                docId: request.docId,
-                uid: prayer.uid,
-                notificationTimestamp: prayer.time as Timestamp,
-                type: "requests",
-              }));
-            });
-
-            setNotifications((prev) => {
-              const newNotifications = [
-                ...prev.filter((n) => n.type !== "requests"),
-                ...requestNotifications,
-              ];
-              setNewNotificationIds(
-                new Set(requestNotifications.map((n) => n.docId))
+          initialRequests.forEach((request) => {
+            if (Array.isArray(request.prayers)) {
+              // Ensure prayers is an array
+              const updatedPrayers = request.prayers.map(
+                (p) => ({ ...p, isViewed: true }) // Update isViewed field
               );
-              return newNotifications;
-            });
+              const requestRef = doc(db, "requests", request.docId);
+              batch.update(requestRef, { prayers: updatedPrayers });
+            } else {
+              console.warn(
+                `Expected prayers to be an array, got: ${typeof request.prayers}`
+              );
+            }
           });
 
-          const unsubscribeTestimonies = onSnapshot(
-            testimoniesQuery,
-            (snapshot) => {
-              const testimonyNotifications = snapshot.docs.flatMap((doc) => {
-                const testimony = {
-                  docId: doc.id,
-                  prayers: doc.data().prayers as Prayer[],
-                  type: "testimonies",
-                };
-
-                return testimony.prayers.map((prayer) => ({
-                  docId: testimony.docId,
-                  uid: prayer.uid,
-                  notificationTimestamp: prayer.time as Timestamp,
-                  type: "testimonies",
-                }));
-              });
-
-              setNotifications((prev) => {
-                const newNotifications = [
-                  ...prev.filter((n) => n.type !== "testimonies"),
-                  ...testimonyNotifications,
-                ];
-                setNewNotificationIds(
-                  new Set(testimonyNotifications.map((n) => n.docId))
-                );
-
-                return newNotifications;
-              });
-            }
-          );
-
-          return () => {
-            unsubscribeRequests();
-            unsubscribeTestimonies();
-          };
+          await batch.commit();
         } catch (error) {
           console.error("Error fetching notifications:", error);
         } finally {
           setLoading(false);
         }
-      };
+      }
+    };
 
-      fetchNotifications();
-    }
+    fetchNotifications();
   }, [user]);
 
   const { today, yesterday, others } = categorizeNotifications(notifications);
@@ -222,7 +171,7 @@ const NotificationStack = ({}) => {
               }
               initial={{ scale: 0, opacity: 0 }}
               animate={{
-                opacity: newNotificationIds.has(notification.docId) ? 1 : 1,
+                opacity: 1,
                 scale: 1,
                 originY: 0,
               }}
@@ -260,7 +209,7 @@ const NotificationStack = ({}) => {
               }
               initial={{ scale: 0, opacity: 0 }}
               animate={{
-                opacity: newNotificationIds.has(notification.docId) ? 1 : 1,
+                opacity: 1,
                 scale: 1,
                 originY: 0,
               }}
@@ -281,7 +230,7 @@ const NotificationStack = ({}) => {
         <>
           <div className="flex justify-between items-center mb-2 mt-4">
             <h2 className="text-left text-white text-xs lg:text-base font-semibold">
-              Others
+              Older
             </h2>
             <h2 className="text-right text-white text-xs lg:text-base font-semibold">
               Prayers Received{" "}
@@ -298,7 +247,7 @@ const NotificationStack = ({}) => {
               }
               initial={{ scale: 0, opacity: 0 }}
               animate={{
-                opacity: newNotificationIds.has(notification.docId) ? 1 : 1,
+                opacity: 1,
                 scale: 1,
                 originY: 0,
               }}

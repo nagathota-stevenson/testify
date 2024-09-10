@@ -22,6 +22,7 @@ import { db } from "@/app/firebase/config";
 type Prayer = {
   uid: string;
   time?: Timestamp;
+  isViewed: boolean;
 };
 
 type CardProps = {
@@ -32,7 +33,7 @@ type CardProps = {
   prayerRequest?: string;
   prayersCount?: string;
   type?: "req" | "tes";
-  prayers?: (Prayer | string)[];
+  prayers?: (Prayer)[];
   isUser?: boolean | undefined;
   docId?: string;
   uid?: string;
@@ -80,12 +81,15 @@ const Card = ({
   };
 
   useEffect(() => {
-    const isSubscribed = prayers.some((prayer) =>
-      typeof prayer === "object" && "uid" in prayer
-        ? prayer.uid === uid
-        : prayer === uid
-    );
-    setSubscribe(isSubscribed);
+    // Ensure prayers is an array before calling .some
+    if (Array.isArray(prayers)) {
+      const isSubscribed = prayers.some((prayer) =>
+        typeof prayer === "object" && "uid" in prayer
+          ? prayer.uid === uid
+          : prayer === uid
+      );
+      setSubscribe(isSubscribed);
+    }
   }, [prayers, uid]);
 
   const handleSubscribe = async () => {
@@ -93,7 +97,7 @@ const Card = ({
     try {
       const timestamp = Timestamp.now();
       await updateDoc(docRef, {
-        prayers: arrayUnion({ uid: uid, time: timestamp }),
+        prayers: arrayUnion({ uid: uid, time: timestamp, isViewed: false }),
       });
       setSubscribe(true);
     } catch (error) {
@@ -176,7 +180,7 @@ const Card = ({
               {userName}
             </h2>
             <p
-              className="text-xs lg:text-base text-gray-500 hover:text-purp"
+              className={`text-xs lg:text-base text-gray-500 ${type ==="req" ? "hover:text-purp" : "hover:text-coral"}`}
               onClick={() => router.push(`/profile/${ownerId}/`)}
             >
               {userHandle}

@@ -175,7 +175,7 @@ const CardBento: React.FC<CardBentoProps> = ({
     setItems((prevItems) => prevItems.filter((item) => item.id !== docId));
   }, []);
 
-  console.log(items);
+
 
   return (
     <section

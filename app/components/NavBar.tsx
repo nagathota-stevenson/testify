@@ -1,3 +1,4 @@
+// NavBar.js
 "use client";
 import { useState, useContext, useEffect } from "react";
 import { IoNotifications } from "react-icons/io5";
@@ -7,7 +8,8 @@ import { MdAddBox } from "react-icons/md";
 import { RiArrowDropDownLine } from "react-icons/ri";
 import ProfileDropDown from "./ProfileDropDown";
 import { motion, useAnimation } from "framer-motion";
-import { useRouter, usePathname } from "next/navigation"; // Updated imports
+import { useRouter, usePathname } from "next/navigation";
+import { useNotifications } from "@/app/context/NotificationContext";
 
 const NavBar = () => {
   const [isDropdownOpen, setDropdownOpen] = useState(false);
@@ -15,11 +17,19 @@ const NavBar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const controls = useAnimation();
   const [reqOrTest, setReqOrTest] = useState("Requests");
-  const [mounted, setMounted] = useState(false); // State to track if component is mounted
+  const [mounted, setMounted] = useState(false);
   const router = useRouter();
-  const pathname = usePathname(); // Use pathname hook
+  const pathname = usePathname();
+  const { newNotificationsCount, setNewNotificationsCount } =
+    useNotifications();
 
-  // Only set mounted to true once the component has mounted
+  const animations = {
+    initial: { scale: 0, opacity: 0 },
+    animate: { scale: 1, opacity: 1 },
+    exit: { scale: 0, opacity: 0 },
+    transition: { type: "spring", stiffness: 350, damping: 40 },
+  };
+
   useEffect(() => {
     setMounted(true);
     controls.start({ opacity: isOpen ? 1 : 0, scale: isOpen ? 1 : 0.9 });
@@ -36,7 +46,7 @@ const NavBar = () => {
 
   const handleNavigation = (path: string) => {
     if (mounted) {
-      router.push(path); 
+      router.push(path);
     }
   };
 
@@ -57,19 +67,18 @@ const NavBar = () => {
           height={32}
           className="rounded-full"
           alt="Logo"
-          onClick={() => handleNavigation("/")} // Navigate to home
+          onClick={() => handleNavigation("/")}
         />
         <button
-          onClick={() => handleNavigation("/requests")} // Route to requests page
+          onClick={() => handleNavigation("/requests")}
           className={`flex text-xs lg:text-base items-center justify-center gap-2 px-4 py-3 rounded-2xl transition-colors duration-300 ${
             pathname === "/requests" ? "bg-purp text-white" : "text-white"
           }`}
         >
           Requests
         </button>
-
         <button
-          onClick={() => handleNavigation("/testimonies")} // Route to testimonies page
+          onClick={() => handleNavigation("/testimonies")}
           className={`flex items-center justify-center gap-2 px-4 py-3 rounded-2xl transition-colors duration-300 ${
             pathname === "/testimonies" ? "bg-coral text-white" : "text-white"
           }`}
@@ -135,11 +144,20 @@ const NavBar = () => {
         {user && userDetails?.isUserId && (
           <button
             onClick={() => handleNavigation("/notifications")}
-            className={`flex items-center justify-center w-[42px] h-[42px] rounded-full transition-colors duration-300 ${
+            className={`relative flex items-center justify-center w-[42px] h-[42px] rounded-full transition-colors duration-300 ${
               pathname === "/notifications" ? "text-purp" : "text-white"
             }`}
           >
             <IoNotifications className="text-2xl" />
+
+            {newNotificationsCount > 0 && (
+              <motion.div
+                {...animations}
+                className="absolute -top-[1px] -right-[1px] bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center"
+              >
+                {newNotificationsCount}
+              </motion.div>
+            )}
           </button>
         )}
 
@@ -160,7 +178,9 @@ const NavBar = () => {
           <button
             onClick={() => handleNavigation("/profile/" + userDetails?.uid)}
             className={`flex items-center justify-center  rounded-full transition-colors duration-300 ${
-              pathname === "/profile" + userDetails?.uid ? "bg-purp text-white" : "text-white"
+              pathname === "/profile" + userDetails?.uid
+                ? "bg-purp text-white"
+                : "text-white"
             }`}
           >
             <div className="relative w-10 h-10 rounded-full overflow-hidden">

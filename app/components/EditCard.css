@@ -2,6 +2,7 @@
 /* Apply the styles */
 .edit-card {
     box-shadow: 8px 8px 0 var(--purp);
+    transition: all 0.3s ease-in-out;
     
     
   }
@@ -10,4 +11,5 @@
   
   .edit-card-testimony {
     box-shadow: 8px 8px 0 var(--coral);
+    transition: all 0.3s ease-in-out;
   }

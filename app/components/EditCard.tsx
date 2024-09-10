@@ -169,7 +169,7 @@ const EditCard: React.FC<EditCardProps> = ({ docId, type }) => {
           <div className="relative">
             <button
               onClick={handleToggle}
-              className="inline-flex w-36 items-center justify-between rounded-2xl border border-gray-300 shadow-sm px-4 py-2 bg-white text-xs lg:text-base font-medium text-gray-700 hover:bg-gray-50 transition-colors duration-300"
+              className="inline-flex w-40 px-3 py-3 items-center justify-between rounded-2xl border border-gray-300 shadow-sm bg-white text-xs lg:text-base font-medium text-gray-700 hover:bg-gray-50 transition-colors duration-300"
             >
               {activeButton === "request" ? "Request" : "Testimony"}
               <RiArrowDropDownLine className="ml-2 h-6 w-6" />
@@ -179,7 +179,7 @@ const EditCard: React.FC<EditCardProps> = ({ docId, type }) => {
               <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={controls}
-                className="absolute left-0 mt-2 w-44 rounded-2xl shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-10"
+                className="absolute left-0 mt-2 w-40 rounded-2xl shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-10"
               >
                 <div className="py-4 shadow-md">
                   <button
@@ -188,7 +188,7 @@ const EditCard: React.FC<EditCardProps> = ({ docId, type }) => {
                       activeButton === "request"
                         ? "bg-purp text-white"
                         : "text-gray-700"
-                    } group flex items-center px-4 py-3 text-xs lg:text-base w-full text-left hover:bg-purp hover:text-white transition-colors duration-300`}
+                    } group flex items-center px-8 py-3 text-xs lg:text-base w-full text-left hover:bg-purp hover:text-white transition-colors duration-300`}
                   >
                     Request
                   </button>
@@ -198,7 +198,7 @@ const EditCard: React.FC<EditCardProps> = ({ docId, type }) => {
                       activeButton === "testimony"
                         ? "bg-coral text-white"
                         : "text-gray-700"
-                    } group flex items-center px-4 py-3 text-xs lg:text-base w-full text-left hover:bg-coral hover:text-white transition-colors duration-300`}
+                    } group flex items-center px-8 py-3 text-xs lg:text-base w-full text-left hover:bg-coral hover:text-white transition-colors duration-300`}
                   >
                     Testimony
                   </button>
@@ -210,7 +210,7 @@ const EditCard: React.FC<EditCardProps> = ({ docId, type }) => {
           <button
             onClick={handlePost}
             disabled={loading || !inputText.trim()}
-            className={`flex text-xs lg:text-base items-center justify-center w-36 px-12 py-3 rounded-2xl transition-color duration-300 ${
+            className={`flex text-xs lg:text-base items-center justify-center w-40 px-12 py-3 rounded-2xl transition-color duration-300 ${
               loading || !inputText.trim()
                 ? "bg-gray-300 cursor-not-allowed"
                 : "bg-blk1 text-white hover:bg-blk2"

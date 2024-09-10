@@ -85,50 +85,47 @@ const CardBento: React.FC<CardBentoProps> = ({
   const fetchItems = useCallback(async () => {
     if (loading) return;
     setLoading(true);
-
+  
     try {
       let collectionQuery = query(
         collection(db, "requests"),
         orderBy("time", "desc"),
         limit(9)
       );
-
+  
       if (filterByType && filterByType !== "all") {
         collectionQuery = query(
           collectionQuery,
           where("type", "==", filterByType)
         );
       }
-
+  
       if (filterByCurrentUser && user?.uid) {
         collectionQuery = query(collectionQuery, where("uid", "==", user.uid));
       }
-
-      if(filterByUserId !== ""){
+  
+      if (filterByUserId) {
         collectionQuery = query(collectionQuery, where("uid", "==", filterByUserId));
       }
-
+  
       if (page > 1) {
-        const lastVisibleDoc =
-          items.length > 0 ? items[items.length - 1].id : null;
+        const lastVisibleDoc = items.length > 0 ? items[items.length - 1].id : null;
         if (lastVisibleDoc) {
-          const lastVisibleSnapshot = await getDoc(
-            doc(db, "requests", lastVisibleDoc)
-          );
+          const lastVisibleSnapshot = await getDoc(doc(db, "requests", lastVisibleDoc));
           collectionQuery = query(
             collectionQuery,
             startAfter(lastVisibleSnapshot)
           );
         }
       }
-
+  
       const snapshot = await getDocs(collectionQuery);
-
+  
       if (snapshot.empty) {
-        setHasMore(false); // No more items to load
+        setHasMore(false);
         return;
       }
-
+  
       const newItems: (Request & User)[] = await Promise.all(
         snapshot.docs.map(async (itemDocument) => {
           const itemData = itemDocument.data() as Request;
@@ -147,23 +144,26 @@ const CardBento: React.FC<CardBentoProps> = ({
         })
       );
 
-      setItems((prevItems) => {
-        const existingIds = new Set(prevItems.map((item) => item.id));
-        const filteredNewItems = newItems.filter(
-          (item) => !existingIds.has(item.id)
-        );
+      console.log(newItems)
+  
+      setItems(prevItems => {
+        const existingIds = new Set(prevItems.map(item => item.id));
+        const filteredNewItems = newItems.filter(item => !existingIds.has(item.id));
         return [...prevItems, ...filteredNewItems];
       });
+  
     } catch (error) {
       console.error("Error fetching data:", error);
     } finally {
       setLoading(false);
     }
-  }, [loading, filterByType, filterByCurrentUser, user?.uid, filterByUserId, page, items]);
-
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading, filterByType, filterByCurrentUser, user?.uid, filterByUserId, page]);
+  
   useEffect(() => {
     fetchItems();
-  }, [fetchItems, page]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page]);
 
   const handlePageChange = (newPage: number) => {
     if (newPage > 0 && (hasMore || newPage > page)) {
@@ -174,8 +174,6 @@ const CardBento: React.FC<CardBentoProps> = ({
   const handleDelete = useCallback((docId: string) => {
     setItems((prevItems) => prevItems.filter((item) => item.id !== docId));
   }, []);
-
-
 
   return (
     <section

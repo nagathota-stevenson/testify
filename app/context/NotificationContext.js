@@ -19,81 +19,81 @@ export const NotificationsProvider = ({ children }) => {
   const audioRef = useRef(null);
   const unsubscribeRef = useRef(null); // Holds the unsubscribe function
 
-  // const handleSnapshot = () => {
-  //   if (user) {
-  //     const requestsQuery = query(
-  //       collection(db, "requests"),
-  //       where("uid", "==", user.uid)
-  //     );
+  const handleSnapshot = () => {
+    if (user) {
+      const requestsQuery = query(
+        collection(db, "requests"),
+        where("uid", "==", user.uid)
+      );
 
-  //     // Listening to the snapshot
-  //     unsubscribeRef.current = onSnapshot(requestsQuery, (snapshot) => {
-  //       const newRequests = snapshot.docs.map((doc) => ({
-  //         docId: doc.id,
-  //         prayers: doc.data().prayers,
-  //         type: "requests",
-  //       }));
+      // Listening to the snapshot
+      unsubscribeRef.current = onSnapshot(requestsQuery, (snapshot) => {
+        const newRequests = snapshot.docs.map((doc) => ({
+          docId: doc.id,
+          prayers: doc.data().prayers,
+          type: "requests",
+        }));
 
-  //       // Filter out prayers where isViewed is false
-  //       const newNotifications = newRequests.flatMap((request) =>
-  //         request.prayers
-  //           .filter((prayer) => !prayer.isViewed) // Filter out viewed prayers
-  //           .map((prayer) => ({
-  //             docId: request.docId,
-  //             uid: prayer.uid,
-  //             notificationTimestamp: prayer.time,
-  //             type: "requests",
-  //           }))
-  //       );
+        // Filter out prayers where isViewed is false
+        const newNotifications = newRequests.flatMap((request) =>
+          request.prayers
+            .filter((prayer) => !prayer.isViewed) // Filter out viewed prayers
+            .map((prayer) => ({
+              docId: request.docId,
+              uid: prayer.uid,
+              notificationTimestamp: prayer.time,
+              type: "requests",
+            }))
+        );
 
-  //       if (newNotifications.length > 0 && audioRef.current) {
-  //         audioRef.current.play();
-  //       }
+        if (newNotifications.length > 0 && audioRef.current) {
+          audioRef.current.play();
+        }
 
-  //       setNotifications((prev) => {
-  //         const updatedNotifications = [
-  //           ...prev.filter((n) => n.type !== "requests"),
-  //           ...newNotifications,
-  //         ];
-  //         setNewNotificationsCount(newNotifications.length);
-  //         return updatedNotifications;
-  //       });
-  //     });
-  //   }
-  // };
+        setNotifications((prev) => {
+          const updatedNotifications = [
+            ...prev.filter((n) => n.type !== "requests"),
+            ...newNotifications,
+          ];
+          setNewNotificationsCount(newNotifications.length);
+          return updatedNotifications;
+        });
+      });
+    }
+  };
 
-  // const unsubscribeSnapshot = () => {
-  //   if (unsubscribeRef.current) {
-  //     unsubscribeRef.current();
-  //     unsubscribeRef.current = null;
-  //   }
-  // };
+  const unsubscribeSnapshot = () => {
+    if (unsubscribeRef.current) {
+      unsubscribeRef.current();
+      unsubscribeRef.current = null;
+    }
+  };
 
-  // useEffect(() => {
-  //   const visibilityChangeHandler = () => {
-  //     if (document.visibilityState === "visible") {
-  //       // Tab is visible, start listening for changes
-  //       handleSnapshot();
-  //     } else {
-  //       // Tab is hidden, unsubscribe to avoid unnecessary reads
-  //       unsubscribeSnapshot();
-  //     }
-  //   };
+  useEffect(() => {
+    const visibilityChangeHandler = () => {
+      if (document.visibilityState === "visible") {
+        // Tab is visible, start listening for changes
+        handleSnapshot();
+      } else {
+        // Tab is hidden, unsubscribe to avoid unnecessary reads
+        unsubscribeSnapshot();
+      }
+    };
 
-  //   // Initial listener setup
-  //   if (document.visibilityState === "visible") {
-  //     handleSnapshot();
-  //   }
+    // Initial listener setup
+    if (document.visibilityState === "visible") {
+      handleSnapshot();
+    }
 
-  //   // Add event listener for visibility changes
-  //   document.addEventListener("visibilitychange", visibilityChangeHandler);
+    // Add event listener for visibility changes
+    document.addEventListener("visibilitychange", visibilityChangeHandler);
 
-  //   // Cleanup
-  //   return () => {
-  //     document.removeEventListener("visibilitychange", visibilityChangeHandler);
-  //     unsubscribeSnapshot();
-  //   };
-  // }, [user]);
+    // Cleanup
+    return () => {
+      document.removeEventListener("visibilitychange", visibilityChangeHandler);
+      unsubscribeSnapshot();
+    };
+  }, [user]);
 
   return (
     <NotificationsContext.Provider

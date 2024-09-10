@@ -20,7 +20,8 @@ const GridCard: React.FC<{
   onDelete: (docId: string) => void;
   isUser: boolean;
   uid?: string;
-}> = ({ data, onDelete, isUser, uid }) => (
+  ownerId?: string;
+}> = ({ data, onDelete, isUser, uid, ownerId }) => (
   <motion.div
     key={data.id}
     initial={{ scale: 0, opacity: 0 }}
@@ -41,6 +42,7 @@ const GridCard: React.FC<{
       docId={data.id}
       isUser={isUser}
       uid={uid}
+      ownerId={ownerId}
       onDelete={onDelete}
     />
   </motion.div>
@@ -64,12 +66,14 @@ type User = {
 type CardBentoProps = {
   filterByType?: "req" | "tes" | "all";
   filterByCurrentUser: boolean;
+  filterByUserId?: string;
   homePage?: boolean;
 };
 
 const CardBento: React.FC<CardBentoProps> = ({
   filterByType,
   filterByCurrentUser,
+  filterByUserId,
   homePage,
 }) => {
   const [items, setItems] = useState<(Request & User)[]>([]);
@@ -98,6 +102,10 @@ const CardBento: React.FC<CardBentoProps> = ({
 
       if (filterByCurrentUser && user?.uid) {
         collectionQuery = query(collectionQuery, where("uid", "==", user.uid));
+      }
+
+      if(filterByUserId !== ""){
+        collectionQuery = query(collectionQuery, where("uid", "==", filterByUserId));
       }
 
       if (page > 1) {
@@ -151,7 +159,7 @@ const CardBento: React.FC<CardBentoProps> = ({
     } finally {
       setLoading(false);
     }
-  }, [loading, filterByType, filterByCurrentUser, user?.uid, page, items]);
+  }, [loading, filterByType, filterByCurrentUser, user?.uid, filterByUserId, page, items]);
 
   useEffect(() => {
     fetchItems();
@@ -166,6 +174,8 @@ const CardBento: React.FC<CardBentoProps> = ({
   const handleDelete = useCallback((docId: string) => {
     setItems((prevItems) => prevItems.filter((item) => item.id !== docId));
   }, []);
+
+  console.log(items);
 
   return (
     <section
@@ -184,6 +194,7 @@ const CardBento: React.FC<CardBentoProps> = ({
               onDelete={handleDelete}
               isUser={filterByCurrentUser}
               uid={userDetails?.uid}
+              ownerId={item.uid}
             />
           ))}
         </div>

@@ -145,7 +145,7 @@ const NavBar = () => {
 
         {!user && (
           <button
-            onClick={() => handleNavigation("/profile")}
+            onClick={() => handleNavigation("/login")}
             className={`flex items-center justify-center gap-2 px-4 py-3 rounded-2xl transition-colors duration-300 transform ${
               pathname === "/profile"
                 ? "bg-white text-blk1"
@@ -158,9 +158,9 @@ const NavBar = () => {
 
         {user && (
           <button
-            onClick={() => handleNavigation("/profile")}
+            onClick={() => handleNavigation("/profile/" + userDetails?.uid)}
             className={`flex items-center justify-center  rounded-full transition-colors duration-300 ${
-              pathname === "/profile" ? "bg-purp text-white" : "text-white"
+              pathname === "/profile" + userDetails?.uid ? "bg-purp text-white" : "text-white"
             }`}
           >
             <div className="relative w-10 h-10 rounded-full overflow-hidden">

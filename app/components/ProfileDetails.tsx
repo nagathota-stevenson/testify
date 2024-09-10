@@ -1,14 +1,42 @@
-import React, { useContext } from 'react';
-import { AuthContext } from '../context/AuthContext';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
+import { doc, getDoc } from 'firebase/firestore'; // Firestore imports
+import { db } from '../firebase/config'; // Import your Firebase configuration
 
-const ProfileDetails = () => {
- 
-  const { userDetails, user } = useContext(AuthContext);
+interface ProfileDetailsProps {
+  uid: string; // Accept uid as a prop
+}
 
-  
-  if (!user) {
+const ProfileDetails: React.FC<ProfileDetailsProps> = ({ uid }) => {
+  const [userDetails, setUserDetails] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchUserDetails = async () => {
+      try {
+        const userDoc = await getDoc(doc(db, 'users', uid));
+        if (userDoc.exists()) {
+          setUserDetails(userDoc.data());
+        } else {
+          setError('User not found');
+        }
+      } catch (err) {
+        setError('Failed to fetch user details');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserDetails();
+  }, [uid]);
+
+  if (loading) {
     return <p>Loading...</p>;
+  }
+
+  if (error) {
+    return <p>{error}</p>;
   }
 
   if (!userDetails) {
@@ -34,6 +62,6 @@ const ProfileDetails = () => {
       </p>
     </div>
   );
-}
+};
 
 export default ProfileDetails;

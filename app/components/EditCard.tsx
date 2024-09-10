@@ -35,7 +35,7 @@ const EditCard: React.FC<EditCardProps> = ({ docId, type }) => {
 
   useEffect(() => {
     controls.start({ opacity: isOpen ? 1 : 0, scale: isOpen ? 1 : 0.9 });
-  }, [isOpen]);
+  }, [controls, isOpen]);
 
   useEffect(() => {
     const fetchDocument = async () => {

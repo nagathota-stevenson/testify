@@ -6,6 +6,8 @@ import { AnimatedSubscribeButton } from "./magicui/animated-subscribe-button";
 import { MdDelete } from "react-icons/md";
 import { FaHands } from "react-icons/fa";
 import { AnimatePresence, motion } from "framer-motion";
+import { useRouter } from "next/navigation";
+
 import {
   doc,
   updateDoc,
@@ -34,6 +36,7 @@ type CardProps = {
   isUser?: boolean | undefined;
   docId?: string;
   uid?: string;
+  ownerId?: string;
   onDelete?: (docId: string) => void;
 };
 
@@ -49,10 +52,12 @@ const Card = ({
   isUser = false,
   uid = "",
   docId = "",
+  ownerId= "",
   onDelete,
 }: CardProps) => {
   const [subscribe, setSubscribe] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const router = useRouter();
 
   const handleDeleteClick = () => {
     setShowConfirm(true);
@@ -170,7 +175,12 @@ const Card = ({
             <h2 className="text-sm lg:text-lg font-semibold text-blk1">
               {userName}
             </h2>
-            <p className="text-xs lg:text-base text-gray-500">{userHandle}</p>
+            <p
+              className="text-xs lg:text-base text-gray-500 hover:text-purp"
+              onClick={() => router.push(`/profile/${ownerId}/`)}
+            >
+              {userHandle}
+            </p>
             <p className="text-[10px] text-gray-300">{prayerDate}</p>
           </div>
           {isUser && (

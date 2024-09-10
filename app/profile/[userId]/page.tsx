@@ -1,28 +1,34 @@
 // pages/profile/index.tsx
 "use client";
 import React, { useState, useContext } from "react";
-import { AuthContext } from "../context/AuthContext";
-import SetupUser from "../components/SetupUser";
-import CardBento from "../components/CardsBento";
-import ProfileLayout from "../components/ProfileLayout";
+import { AuthContext } from "../../context/AuthContext";
+import SetupUser from "../../components/SetupUser";
+import CardBento from "../../components/CardsBento";
+import ProfileLayout from "../../components/ProfileLayout";
 import { motion } from "framer-motion";
-import { useRouter } from "next/navigation"; // Import useRouter
-import NavBar from "../components/NavBar";
+import { useRouter } from "next/navigation";
+import NavBar from "../../components/NavBar";
 
-const ProfilePage = () => {
+type ProfilePageProps = {
+  params: any;
+};
+
+const ProfilePage = ({ params }: ProfilePageProps) => {
   const { userDetails, user } = useContext(AuthContext);
   const [profileActiveButton, setProfileActiveButton] = useState("All");
 
-  const router = useRouter(); // Initialize the router
+  const router = useRouter();
+
+  console.log(params.userId);
 
   // Check if user is not authenticated
   if (!user) {
     return (
-      <> 
-      <NavBar />
-      <section className="bg-blk1 w-screen h-screen flex items-center justify-center pt-24 pb-24">
-        <p> Loading.. </p>
-      </section>
+      <>
+        <NavBar />
+        <section className="bg-blk1 w-screen h-screen flex items-center justify-center pt-24 pb-24">
+          <p> Loading.. </p>
+        </section>
       </>
     );
   }
@@ -30,27 +36,27 @@ const ProfilePage = () => {
   // If the user hasn't set up their profile yet
   if (!userDetails?.isUserId) {
     return (
-      <> 
-      <NavBar />
-      <section className="bg-blk1 w-screen h-screen flex items-center justify-center pt-24 pb-24">
-        <SetupUser />
-      </section>
+      <>
+        <NavBar />
+        <section className="bg-blk1 w-screen h-screen flex items-center justify-center pt-24 pb-24">
+          <SetupUser />
+        </section>
       </>
     );
   }
 
   const handleNavigation = (section: string) => {
     if (section === "Requests") {
-      router.push("/profile/requests");
+      router.push("/profile/" + params.userId + "/requests/");
     } else if (section === "Testimonies") {
-      router.push("/profile/testimonies");
+      router.push("/profile/" + params.userId + "/testimonies/");
     } else {
-      router.push("/profile/");
+      router.push("/profile/" + params.userId);
     }
   };
 
   return (
-    <ProfileLayout>
+    <ProfileLayout uid={params.userId}>
       <div className="flex items-center text-xs lg:text-base gap-8">
         <button
           className={`text-white p-[12px] border-b-2 ${
@@ -86,7 +92,11 @@ const ProfilePage = () => {
         exit={{ scale: 0, opacity: 0 }}
         transition={{ type: "spring", stiffness: 350, damping: 40 }}
       >
-        <CardBento filterByCurrentUser={true} filterByType="all" />
+        <CardBento
+          filterByCurrentUser={params.userId === userDetails?.uid}
+          filterByUserId={params.userId}
+          filterByType="all"
+        />
       </motion.div>
     </ProfileLayout>
   );

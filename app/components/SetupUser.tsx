@@ -138,9 +138,8 @@ const SetupUser = () => {
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unknown error");
     } finally {
-     
       setLoading(false);
-      router.push("/profile");
+      router.push(`/profile/${auth.currentUser?.uid}`);
     }
   };
 

@@ -1,5 +1,5 @@
-"use client";
-import React, { useState, useEffect, useContext, useCallback } from "react";
+'use client';
+import React, { useState, useEffect, useContext, useCallback, useMemo, memo } from "react";
 import { db } from "@/app/firebase/config";
 import {
   doc,
@@ -24,8 +24,8 @@ const GridCard: React.FC<{
   ownerId?: string;
   isHomePage?: boolean;
   isAnonymous?: boolean;
-}> = ({ data, onDelete, isUser, uid, ownerId, isAnonymous, isHomePage }) => (
- 
+// eslint-disable-next-line react/display-name
+}> = memo(({ data, onDelete, isUser, uid, ownerId, isAnonymous, isHomePage }) => (
   <motion.div
     key={data.id}
     initial={{ scale: 0, opacity: 0 }}
@@ -52,7 +52,7 @@ const GridCard: React.FC<{
       onDelete={onDelete}
     />
   </motion.div>
-);
+));
 
 type Request = {
   id: string;
@@ -186,17 +186,20 @@ const CardBento: React.FC<CardBentoProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page]);
 
-  const handlePageChange = (newPage: number) => {
+  const handlePageChange = useCallback((newPage: number) => {
     if (newPage > 0 && (hasMore || newPage > page)) {
       setPage(newPage);
     }
-  };
+  }, [hasMore, page]);
 
   const handleDelete = useCallback((docId: string) => {
     setItems((prevItems) => prevItems.filter((item) => item.id !== docId));
   }, []);
 
-  const filteredItems = items.filter(item => !(item.isAnonymous && !homePage && !filterByCurrentUser));
+  const filteredItems = useMemo(() => 
+    items.filter(item => !(item.isAnonymous && !homePage && !filterByCurrentUser)),
+    [items, homePage, filterByCurrentUser]
+  );
 
   return (
     <section

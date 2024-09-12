@@ -1,4 +1,3 @@
-
 import React from 'react'
 import CardBento from '../components/CardsBento';
 import NavBar from '../components/NavBar';

@@ -19,8 +19,7 @@ const config = {
     },
     extend: {
       fontFamily: {
-        "maison-mono": ["Maison Mono", "mono"],
-        "maison": ["Maison", "sans"],
+        mono: ['var(--font-geist-mono)'],
       },
       colors: {
         blk1: 'rgba(27, 32, 40, 1)',

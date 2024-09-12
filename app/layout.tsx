@@ -3,6 +3,7 @@ import "./globals.css";
 import { AuthProvider } from "./context/AuthContext";
 import { NotificationsProvider } from "./context/NotificationContext";
 import NavBar from "./components/NavBar";
+import { GeistMono } from "geist/font/mono";
 
 export const metadata: Metadata = {
   title: "testifyth",
@@ -14,8 +15,9 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  console.log(GeistMono.variable);
   return (
-    <html lang="en" className="bg-blk1 font-maison-mono">
+    <html lang="en" className={`${GeistMono.className} font-light bg-blk1`}>
       <head>
         <title>testifyth | Pray for Unknown. Praise the Known</title>
         <meta
@@ -46,12 +48,12 @@ export default function RootLayout({
 
         <link rel="icon" href="/favicon.ico" />
       </head>
-      <body>
+      <body >
         <AuthProvider>
           <NotificationsProvider>
-          <NavBar />
+            <NavBar />
             {children}
-            </NotificationsProvider>
+          </NotificationsProvider>
         </AuthProvider>
       </body>
     </html>

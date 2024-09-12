@@ -13,7 +13,6 @@
   --coral: rgba(255, 127, 80, 1);
 }
 
-
 @media (prefers-color-scheme: dark) {
   :root {
     --foreground-rgb: 255, 255, 255;
@@ -34,30 +33,4 @@ body {
   .text-balance {
     text-wrap: balance;
   }
-}
-
-@font-face {
-  font-family: 'Maison';
-  src: url('/fonts/Maison_Neue_Bold.ttf') format('truetype');
-  font-weight: 700;
-  font-style: bold;
-}
-
-@font-face {
-  font-family: 'Maison';
-  src: url('/fonts/Maison_Neue_Book.ttf') format('truetype');
-  font-weight: 500;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'Maison';
-  src: url('/fonts/Maison_Neue_Light.ttf') format('truetype');
-  font-weight: 100;
-  font-style: light;
-}
-
-@font-face {
-  font-family: 'Maison Mono';
-  src: url('/fonts/Maison_Neue_Mono.ttf') format('truetype');
 }

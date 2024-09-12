@@ -11,7 +11,7 @@ interface ProfileLayoutProps {
 const ProfileLayout: React.FC<ProfileLayoutProps> = ({ children, uid }) => {
   return (
     <>
-      <NavBar />
+     
       <section className="bg-blk1 w-screen h-screen flex items-start justify-center pt-24 pb-24">
         <div className="flex flex-col items-center">
           <ProfileDetails uid={uid} />

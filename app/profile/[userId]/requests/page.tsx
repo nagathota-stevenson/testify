@@ -1,5 +1,4 @@
-// pages/profile/index.tsx
-"use client";
+'use client'
 import React, { useState, useContext } from "react";
 import { AuthContext } from "../../../context/AuthContext";
 import SetupUser from "../../../components/SetupUser";
@@ -19,16 +18,10 @@ const ProfilePage = ({ params }: ProfilePageProps) => {
   const router = useRouter(); 
   
 
-  if (!user) {
-    return (
-      <section className="bg-blk1 w-screen h-screen flex items-center justify-center pt-24 pb-24">
-        <p> Loading... </p>
-      </section>
-    );
-  }
+ 
 
   // If the user hasn't set up their profile yet
-  if (!userDetails?.isUserId) {
+  if (user && !userDetails?.isUserId) {
     return (
       <section className="bg-blk1 w-screen h-screen flex items-center justify-center pt-24 pb-24">
         <SetupUser />

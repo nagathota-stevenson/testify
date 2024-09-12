@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { AuthProvider } from "./context/AuthContext";
 import { NotificationsProvider } from "./context/NotificationContext";
+import NavBar from "./components/NavBar";
 
 export const metadata: Metadata = {
   title: "testifyth",
@@ -47,7 +48,10 @@ export default function RootLayout({
       </head>
       <body>
         <AuthProvider>
-          <NotificationsProvider>{children}</NotificationsProvider>
+          <NotificationsProvider>
+          <NavBar />
+            {children}
+            </NotificationsProvider>
         </AuthProvider>
       </body>
     </html>

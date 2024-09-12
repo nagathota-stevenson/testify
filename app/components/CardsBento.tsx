@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import React, { useState, useEffect, useContext, useCallback } from "react";
 import { db } from "@/app/firebase/config";
 import {
@@ -14,7 +14,7 @@ import {
 } from "firebase/firestore";
 import { AuthContext } from "@/app/context/AuthContext";
 import Card from "../components/Card";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 
 const GridCard: React.FC<{
   data: Request & User;
@@ -22,7 +22,10 @@ const GridCard: React.FC<{
   isUser: boolean;
   uid?: string;
   ownerId?: string;
-}> = ({ data, onDelete, isUser, uid, ownerId }) => (
+  isHomePage?: boolean;
+  isAnonymous?: boolean;
+}> = ({ data, onDelete, isUser, uid, ownerId, isAnonymous, isHomePage }) => (
+ 
   <motion.div
     key={data.id}
     initial={{ scale: 0, opacity: 0 }}
@@ -42,7 +45,9 @@ const GridCard: React.FC<{
       type={data.type}
       docId={data.id}
       isUser={isUser}
+      isHomePage={isHomePage}
       uid={uid}
+      isAnonymous={isAnonymous}
       ownerId={ownerId}
       onDelete={onDelete}
     />
@@ -54,6 +59,7 @@ type Request = {
   uid: string;
   type: "req" | "tes";
   req: string;
+  isAnonymous: boolean;
   time: any; // Firestore Timestamp
   prayers: any[]; // Array of prayer data
 };
@@ -86,47 +92,53 @@ const CardBento: React.FC<CardBentoProps> = ({
   const fetchItems = useCallback(async () => {
     if (loading) return;
     setLoading(true);
-  
+
     try {
       let collectionQuery = query(
         collection(db, "requests"),
         orderBy("time", "desc"),
         limit(9)
       );
-  
+
       if (filterByType && filterByType !== "all") {
         collectionQuery = query(
           collectionQuery,
           where("type", "==", filterByType)
         );
       }
-  
+
       if (filterByCurrentUser && user?.uid) {
         collectionQuery = query(collectionQuery, where("uid", "==", user.uid));
       }
-  
+
       if (filterByUserId) {
-        collectionQuery = query(collectionQuery, where("uid", "==", filterByUserId));
+        collectionQuery = query(
+          collectionQuery,
+          where("uid", "==", filterByUserId)
+        );
       }
-  
+
       if (page > 1) {
-        const lastVisibleDoc = items.length > 0 ? items[items.length - 1].id : null;
+        const lastVisibleDoc =
+          items.length > 0 ? items[items.length - 1].id : null;
         if (lastVisibleDoc) {
-          const lastVisibleSnapshot = await getDoc(doc(db, "requests", lastVisibleDoc));
+          const lastVisibleSnapshot = await getDoc(
+            doc(db, "requests", lastVisibleDoc)
+          );
           collectionQuery = query(
             collectionQuery,
             startAfter(lastVisibleSnapshot)
           );
         }
       }
-  
+
       const snapshot = await getDocs(collectionQuery);
-  
+
       if (snapshot.empty) {
         setHasMore(false);
         return;
       }
-  
+
       const newItems: (Request & User)[] = await Promise.all(
         snapshot.docs.map(async (itemDocument) => {
           const itemData = itemDocument.data() as Request;
@@ -145,25 +157,33 @@ const CardBento: React.FC<CardBentoProps> = ({
         })
       );
 
-      console.log(newItems)
-  
-      setItems(prevItems => {
-        const existingIds = new Set(prevItems.map(item => item.id));
-        const filteredNewItems = newItems.filter(item => !existingIds.has(item.id));
+      console.log(newItems);
+
+      setItems((prevItems) => {
+        const existingIds = new Set(prevItems.map((item) => item.id));
+        const filteredNewItems = newItems.filter(
+          (item) => !existingIds.has(item.id)
+        );
         return [...prevItems, ...filteredNewItems];
       });
-  
     } catch (error) {
       console.error("Error fetching data:", error);
     } finally {
       setLoading(false);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loading, filterByType, filterByCurrentUser, user?.uid, filterByUserId, page]);
-  
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    loading,
+    filterByType,
+    filterByCurrentUser,
+    user?.uid,
+    filterByUserId,
+    page,
+  ]);
+
   useEffect(() => {
     fetchItems();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page]);
 
   const handlePageChange = (newPage: number) => {
@@ -176,29 +196,37 @@ const CardBento: React.FC<CardBentoProps> = ({
     setItems((prevItems) => prevItems.filter((item) => item.id !== docId));
   }, []);
 
+  const filteredItems = items.filter(item => !(item.isAnonymous && !homePage && !filterByCurrentUser));
+
   return (
     <section
       className={`bg-blk1 w-screen h-screen mb-8 flex flex-col items-center justify-between pb-24 p-4 ${
         homePage ? "pt-32" : "pt-4"
       }`}
     >
-      {items.length === 0 ? (
+      {filteredItems.length === 0 ? (
         <p>No items found.</p>
       ) : (
+        <AnimatePresence>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-8 px-4 pb-8">
-          {items.map((item) => (
-            <GridCard
-              key={item.id}
-              data={item}
-              onDelete={handleDelete}
-              isUser={filterByCurrentUser}
-              uid={userDetails?.uid}
-              ownerId={item.uid}
-            />
-          ))}
+          {filteredItems
+            .filter((item) => item) 
+            .map((item) => (
+              <GridCard
+                key={item.id}
+                data={item}
+                onDelete={handleDelete}
+                isUser={filterByCurrentUser}
+                uid={userDetails?.uid}
+                ownerId={item.uid}
+                isHomePage={homePage}
+                isAnonymous={item.isAnonymous}
+              />
+            ))}
         </div>
+      </AnimatePresence>
       )}
-      {hasMore && (
+      {hasMore &&  (
         <div className="pagination-controls p-4">
           <button
             onClick={() => handlePageChange(page + 1)}

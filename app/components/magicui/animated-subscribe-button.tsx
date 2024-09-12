@@ -46,7 +46,7 @@ export const AnimatedSubscribeButton: React.FC<AnimatedSubscribeButtonProps> = (
         >
           <motion.span
             key="subscribed-text"
-            className="relative block h-full w-full font-semibold"
+            className="relative block h-full w-full font-normal"
             initial={{ y: -50 }}
             animate={{ y: 0 }}
             style={{ color: buttonColor }}
@@ -66,7 +66,7 @@ export const AnimatedSubscribeButton: React.FC<AnimatedSubscribeButtonProps> = (
         >
           <motion.span
             key="not-subscribed-text"
-            className="relative block font-semibold"
+            className="relative block font-normal"
             initial={{ y: 0 }}
             exit={{ y: 50, transition: { duration: 0.1 } }}
           >

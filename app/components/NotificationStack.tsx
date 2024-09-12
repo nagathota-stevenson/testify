@@ -153,10 +153,10 @@ const NotificationStack = () => {
       {today.length > 0 && (
         <>
           <div className="flex justify-between items-center mb-2 mt-4">
-            <h2 className="text-left text-white text-xs lg:text-base font-semibold">
+            <h2 className="text-left text-white text-xs lg:text-base font-normal">
               Today
             </h2>
-            <h2 className="text-right text-white text-xs lg:text-base font-semibold">
+            <h2 className="text-right text-white text-xs lg:text-base font-normal">
               Prayers Received{" "}
               <span>
                 <RiArrowLeftDownLine className="text-white inline-block mr-1 size-5" />
@@ -191,10 +191,10 @@ const NotificationStack = () => {
       {yesterday.length > 0 && (
         <>
           <div className="flex justify-between items-center mb-2 mt-4">
-            <h2 className="text-left text-white text-xs lg:text-base font-semibold">
+            <h2 className="text-left text-white text-xs lg:text-base font-normal">
               Yesterday
             </h2>
-            <h2 className="text-right text-white text-xs lg:text-base font-semibold">
+            <h2 className="text-right text-white text-xs lg:text-base font-normal">
               Prayers Received{" "}
               <span>
                 <RiArrowLeftDownLine className="text-white inline-block mr-1 size-5" />
@@ -229,10 +229,10 @@ const NotificationStack = () => {
       {others.length > 0 && (
         <>
           <div className="flex justify-between items-center mb-2 mt-4">
-            <h2 className="text-left text-white text-xs lg:text-base font-semibold">
+            <h2 className="text-left text-white text-xs lg:text-base font-normal">
               Older
             </h2>
-            <h2 className="text-right text-white text-xs lg:text-base font-semibold">
+            <h2 className="text-right text-white text-xs lg:text-base font-normal">
               Prayers Received{" "}
               <span>
                 <RiArrowLeftDownLine className="text-white inline-block mr-1 size-5" />

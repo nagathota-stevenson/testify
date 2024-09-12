@@ -1,13 +1,14 @@
-'use client'
+"use client";
 import React, { useEffect, useState } from "react";
 import "./Card.css";
 import Image from "next/image";
 import { PiHandsPrayingFill } from "react-icons/pi";
 import { AnimatedSubscribeButton } from "./magicui/animated-subscribe-button";
 import { MdDelete } from "react-icons/md";
-import { FaHands } from "react-icons/fa";
+import { FaHands, FaUserSecret } from "react-icons/fa";
 import { AnimatePresence, motion } from "framer-motion";
 import { useRouter } from "next/navigation";
+import { LiaUserSecretSolid } from "react-icons/lia";
 
 import {
   doc,
@@ -34,11 +35,13 @@ type CardProps = {
   prayerRequest?: string;
   prayersCount?: string;
   type?: "req" | "tes";
-  prayers?: (Prayer)[];
+  prayers?: Prayer[];
   isUser?: boolean | undefined;
   docId?: string;
   uid?: string;
   ownerId?: string;
+  isHomePage?: boolean | undefined;
+  isAnonymous?: boolean | undefined;
   onDelete?: (docId: string) => void;
 };
 
@@ -54,7 +57,9 @@ const Card = ({
   isUser = false,
   uid = "",
   docId = "",
-  ownerId= "",
+  ownerId = "",
+  isAnonymous = false,
+  isHomePage,
   onDelete,
 }: CardProps) => {
   const [subscribe, setSubscribe] = useState(false);
@@ -130,6 +135,10 @@ const Card = ({
     transition: { type: "spring", stiffness: 350, damping: 40 },
   };
 
+  if(isAnonymous && !isHomePage && !isUser){
+    return null;
+  }
+
   return (
     <div
       className={`bg-white rounded-2xl border-solid border-2 border-blk1 flex flex-col p-4 h-[350px]  
@@ -142,7 +151,7 @@ const Card = ({
             {...animations}
           >
             <div className="p-8 px-2 bg-gray-100 border-solid border-2 border-blk1 rounded-2xl text-center">
-              <p className="text-base font-semibold text-blk1 mb-4">
+              <p className="text-base font-normal text-blk1 mb-4">
                 Would you like to delete this{" "}
                 {type === "req" ? "Request" : "Testimony"}?
               </p>
@@ -167,34 +176,48 @@ const Card = ({
 
       <div className="flex flex-col h-full">
         <div className="flex items-center mb-4">
+        
           <div className="relative w-16 h-16 rounded-full overflow-hidden">
-            <Image
-              src={userImage}
-              alt="User DP"
-              layout="fill"
-              objectFit="cover"
-              className="rounded-full"
-            />
+            {isAnonymous ? (
+              // Show anonymous icon
+              <div className="flex items-center justify-center w-full h-full bg-gray-200">
+                <LiaUserSecretSolid className="text-gray-500 w-10 h-10" />
+              </div>
+            ) : (
+              <Image
+                src={userImage}
+                alt="User DP"
+                layout="fill"
+                objectFit="cover"
+                className="rounded-full"
+              />
+            )}
           </div>
+
+          {/* User Info */}
           <div className="ml-4">
-            <h2 className="text-sm lg:text-lg font-semibold text-blk1">
-              {userName}
+            <h2 className="text-sm lg:text-lg font-normal text-blk1">
+              {isAnonymous ? "Anonymous" : userName}
             </h2>
             <p
-              className={`text-xs lg:text-base text-gray-500 ${type ==="req" ? "hover:text-purp" : "hover:text-coral"}`}
-              onClick={() => router.push(`/profile/${ownerId}/`)}
+              className={`text-xs lg:text-base text-gray-500 ${
+                type === "req" ? "hover:text-purp" : "hover:text-coral"
+              } ${isAnonymous ? "cursor-not-allowed" : "cursor-pointer"}`}
+              onClick={() =>
+                !isAnonymous && router.push(`/profile/${ownerId}/`)
+              }
             >
-              {userHandle}
+              {isAnonymous ? "Anonymous User" : userHandle}
             </p>
             <p className="text-[10px] text-gray-300">{prayerDate}</p>
           </div>
-          {isUser && (
+
+          {isUser &&  (
             <button className="ml-auto self-start" onClick={handleDeleteClick}>
               <MdDelete className="text-gray-300 size-6 mr-2 mt-2 ml-auto self-start hover:text-red-500" />
             </button>
           )}
         </div>
-
         <div className="relative flex-grow mb-4 overflow-hidden">
           <div className="relative h-full overflow-auto pr-4 pb-16">
             <p className="text-gray-700 text-xs lg:text-base text-balance">
@@ -203,10 +226,9 @@ const Card = ({
           </div>
           <div className="absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-white to-transparent pointer-events-none z-10"></div>
         </div>
-
         <div className="border-t border-gray-300 pt-4 mt-auto">
           <div className="flex justify-between items-center">
-            <span className="text-blk1 font-semibold text-xs lg:text-base">
+            <span className="text-blk1 font-normal text-xs lg:text-base">
               {type === "req"
                 ? `${prayersCount} Prayed`
                 : `${prayersCount} Praised`}

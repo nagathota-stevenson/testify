@@ -54,10 +54,10 @@ const ProfileDetails: React.FC<ProfileDetailsProps> = ({ uid }) => {
           className="rounded-full"
         />
       </div>
-      <h2 className="text-center text-white text-xl lg:text-4xl font-semibold mb-2 mt-4">
+      <h2 className="text-center text-white text-xl lg:text-4xl font-normal mb-2 mt-4">
         {userDetails.displayName || "User"}
       </h2>
-      <p className="text-center text-gray-300 text-sm lg:text-base font-semibold mb-4">
+      <p className="text-center text-gray-300 text-sm lg:text-base font-normal mb-4">
         @{userDetails.userID}
       </p>
     </div>

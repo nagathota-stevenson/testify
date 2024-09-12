@@ -94,11 +94,11 @@ const ProfileDropDown = () => {
               />
             </div>
           )}
-          <h2 className="relative text-center text-blk1 text-xl  font-semibold mb-2 mt-4">
+          <h2 className="relative text-center text-blk1 text-xl  font-normal mb-2 mt-4">
             {userDetails?.displayName || "User"}
           </h2>
           {userDetails?.isUserId && (
-            <p className="text-center text-gray-300 text-sm font-semibold mb-4">
+            <p className="text-center text-gray-300 text-sm font-normal mb-4">
               @{userDetails?.userID}
             </p>
           )}

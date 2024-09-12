@@ -76,7 +76,7 @@ const ProfilePage = ({ params }: ProfilePageProps) => {
         exit={{ scale: 0, opacity: 0 }}
         transition={{ type: "spring", stiffness: 350, damping: 40 }}
       >
-        <CardBento filterByCurrentUser={(params.userId === userDetails.uid)} filterByUserId={params.userId} filterByType="req" />
+        <CardBento filterByCurrentUser={(params.userId === userDetails?.uid)} filterByUserId={params.userId} filterByType="req" homePage={false}/>
       </motion.div>
     </ProfileLayout>
   );

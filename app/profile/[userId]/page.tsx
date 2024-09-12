@@ -79,6 +79,7 @@ const ProfilePage = ({ params }: ProfilePageProps) => {
           filterByCurrentUser={params.userId === userDetails?.uid}
           filterByUserId={params.userId}
           filterByType="all"
+          homePage={false}
         />
       </motion.div>
     </ProfileLayout>

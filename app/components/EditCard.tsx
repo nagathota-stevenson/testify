@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import { useState, useEffect, useContext } from "react";
 import { AuthContext } from "@/app/context/AuthContext"; // Adjust path as needed
 import {
@@ -31,17 +31,20 @@ const EditCard: React.FC<EditCardProps> = ({ docId, type }) => {
   const [loading, setLoading] = useState(false);
   const [posted, setPosted] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-  const controls = useAnimation();
+  const [isAnonymous, setisAnonymous] = useState(false);
   const filter = new Filter();
 
-  useEffect(() => {
-    controls.start({ opacity: isOpen ? 1 : 0, scale: isOpen ? 1 : 0.9 });
-  }, [controls, isOpen]);
+  const animations = {
+    initial: { scale: 0, opacity: 0 },
+    animate: { scale: 1, opacity: 1 },
+    exit: { scale: 0, opacity: 0 },
+    transition: { type: "spring", stiffness: 350, damping: 40 },
+  };
 
   useEffect(() => {
     const fetchDocument = async () => {
       if (docId) {
-        const docRef = doc(db, "requests", docId); // Always fetching from 'requests' collection
+        const docRef = doc(db, "requests", docId);
         try {
           const docSnap = await getDoc(docRef);
           if (docSnap.exists()) {
@@ -98,6 +101,7 @@ const EditCard: React.FC<EditCardProps> = ({ docId, type }) => {
       req: cleanedText,
       uid: userDetails?.uid,
       time: serverTimestamp(),
+      isAnonymous: isAnonymous,
       prayers: [], // Adjust this as needed
       type: activeButton === "request" ? "req" : "tes",
     };
@@ -125,13 +129,17 @@ const EditCard: React.FC<EditCardProps> = ({ docId, type }) => {
     }
   };
 
+  const handleAnonymousToggle = () => {
+    setisAnonymous((prev) => !prev);
+  };
+
   return (
     <AnimatePresence>
       <motion.div
         className={`bg-white lg:w-[500px] sm:w-[400px] rounded-2xl border-2 border-blk1 flex flex-col p-8 ${
           activeButton === "request" ? "edit-card" : "edit-card-testimony"
         } relative`}
-        initial={{ scale: 0.5, opacity: 0 }}
+        initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1, originY: 0 }}
         exit={{ scale: 0, opacity: 0 }}
         transition={{ type: "spring", stiffness: 350, damping: 40 }}
@@ -147,7 +155,7 @@ const EditCard: React.FC<EditCardProps> = ({ docId, type }) => {
             />
           )}
           <div className="ml-4">
-            <h2 className="text-sm lg:text-lg font-semibold text-blk1">
+            <h2 className="text-sm lg:text-lg font-normal text-blk1">
               {userDetails?.displayName}
             </h2>
             <p className="text-xs lg:text-sm text-gray-500">
@@ -166,11 +174,31 @@ const EditCard: React.FC<EditCardProps> = ({ docId, type }) => {
           }
           className="min-h-[250px] text-xs lg:text-base text-start border-gray-300 text-blk1 mb-4 focus:outline-none focus:ring-0 focus:border-purp resize-none"
         />
+        <div className="flex items-center p-4 rounded-2xl bg-gray-100 justify-between gap-2 mb-4">
+          <label
+            htmlFor="anonymousToggle"
+            className="text-xs lg:text-base font-normal text-blk1"
+          >
+            Post Anonymously
+          </label>
+          <div
+            className={`relative inline-block w-12 h-6 cursor-pointer ${
+              isAnonymous ? "bg-blk1" : "bg-gray-300"
+            } rounded-full transition-colors duration-300`}
+            onClick={handleAnonymousToggle}
+          >
+            <span
+              className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow-md transform transition-transform duration-300 ${
+                isAnonymous ? "translate-x-6" : "translate-x-0"
+              }`}
+            ></span>
+          </div>
+        </div>
         <div className="relative flex items-center justify-between gap-4 text-left">
           <div className="relative">
             <button
               onClick={handleToggle}
-              className="inline-flex w-40 px-3 py-3 items-center justify-between rounded-2xl border border-gray-300 shadow-sm bg-white text-xs lg:text-base font-medium text-gray-700 hover:bg-gray-50 transition-colors duration-300"
+              className="inline-flex w-40 px-3 py-3 items-center justify-between rounded-2xl border border-gray-300 shadow-sm bg-white text-xs lg:text-base font-normal text-gray-700 hover:bg-gray-50 transition-colors duration-300"
             >
               {activeButton === "request" ? "Request" : "Testimony"}
               <RiArrowDropDownLine className="ml-2 h-6 w-6" />
@@ -178,8 +206,7 @@ const EditCard: React.FC<EditCardProps> = ({ docId, type }) => {
 
             {isOpen && (
               <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={controls}
+                {...animations}
                 className="absolute left-0 mt-2 w-40 rounded-2xl shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-10"
               >
                 <div className="py-4 shadow-md">
@@ -188,7 +215,7 @@ const EditCard: React.FC<EditCardProps> = ({ docId, type }) => {
                     className={`${
                       activeButton === "request"
                         ? "bg-purp text-white"
-                        : "text-gray-700"
+                        : "text-blk1"
                     } group flex items-center px-8 py-3 text-xs lg:text-base w-full text-left hover:bg-purp hover:text-white transition-colors duration-300`}
                   >
                     Request
@@ -198,7 +225,7 @@ const EditCard: React.FC<EditCardProps> = ({ docId, type }) => {
                     className={`${
                       activeButton === "testimony"
                         ? "bg-coral text-white"
-                        : "text-gray-700"
+                        : "text-blk1"
                     } group flex items-center px-8 py-3 text-xs lg:text-base w-full text-left hover:bg-coral hover:text-white transition-colors duration-300`}
                   >
                     Testimony
@@ -213,7 +240,7 @@ const EditCard: React.FC<EditCardProps> = ({ docId, type }) => {
             disabled={loading || !inputText.trim()}
             className={`flex text-xs lg:text-base items-center justify-center w-40 px-12 py-3 rounded-2xl transition-color duration-300 ${
               loading || !inputText.trim()
-                ? "bg-gray-300 cursor-not-allowed"
+                ? "bg-gray-200 cursor-not-allowed"
                 : "bg-blk1 text-white hover:bg-blk2"
             }`}
           >
@@ -224,6 +251,7 @@ const EditCard: React.FC<EditCardProps> = ({ docId, type }) => {
             )}
           </button>
         </div>
+
         <AnimatePresence>
           {posted && (
             <motion.div
@@ -234,8 +262,9 @@ const EditCard: React.FC<EditCardProps> = ({ docId, type }) => {
               onClick={() => setPosted(false)}
             >
               <div className="text-center flex items-center">
-                
-                <p className="text-xs text-blk1 lg:text-base font-semibold">Posted </p>
+                <p className="text-xs text-blk1 lg:text-base font-normal">
+                  Posted{" "}
+                </p>
                 <FaCheckCircle className="text-green-400 text-4xl ml-2" />
               </div>
             </motion.div>

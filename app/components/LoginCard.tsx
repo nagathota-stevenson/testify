@@ -146,10 +146,10 @@ const LoginCard = () => {
       exit={{ scale: 0, opacity: 0 }}
       transition={{ type: "spring", stiffness: 350, damping: 40 }}
     >
-      <h2 className="text-center text-blk1 text-xl font-semibold mb-2 mt-4">
+      <h2 className="text-center text-blk1 text-xl font-normal mb-2 mt-4">
         {isSigningUp ? `Join ${TITLE} today!` : `Welcome back to ${TITLE}!`}
       </h2>
-      <h2 className="text-center text-purp text-sm font-semibold mb-8">
+      <h2 className="text-center text-purp text-sm font-normal mb-8">
         {isSigningUp
           ? "Pray for Unknown. Praise the Known."
           : "Please login to continue."}

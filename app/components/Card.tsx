@@ -138,7 +138,7 @@ const Card = ({
       <AnimatePresence>
         {showConfirm && (
           <motion.div
-            className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-75 rounded-2xl z-10"
+            className="absolute inset-0 flex items-center z-50 justify-center bg-white bg-opacity-75 rounded-2xl"
             {...animations}
           >
             <div className="p-8 px-2 bg-gray-100 border-solid border-2 border-blk1 rounded-2xl text-center">

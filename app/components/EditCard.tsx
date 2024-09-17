@@ -174,27 +174,7 @@ const EditCard: React.FC<EditCardProps> = ({ docId, type }) => {
           }
           className="min-h-[250px] text-xs lg:text-base text-start border-gray-300 text-blk1 mb-4 focus:outline-none focus:ring-0 focus:border-purp resize-none"
         />
-        <div className="flex items-center p-4 rounded-2xl bg-gray-100 justify-between gap-2 mb-4">
-          <label
-            htmlFor="anonymousToggle"
-            className="text-xs lg:text-base font-normal text-blk1"
-          >
-            Post Anonymously
-          </label>
-          <div
-            className={`relative inline-block w-12 h-6 cursor-pointer ${
-              isAnonymous ? "bg-blk1" : "bg-gray-300"
-            } rounded-full transition-colors duration-300`}
-            onClick={handleAnonymousToggle}
-          >
-            <span
-              className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow-md transform transition-transform duration-300 ${
-                isAnonymous ? "translate-x-6" : "translate-x-0"
-              }`}
-            ></span>
-          </div>
-        </div>
-        <div className="relative flex items-center justify-between gap-4 text-left">
+        <div className="flex items-center rounded-2xl justify-between mb-6">
           <div className="relative">
             <button
               onClick={handleToggle}
@@ -234,11 +214,30 @@ const EditCard: React.FC<EditCardProps> = ({ docId, type }) => {
               </motion.div>
             )}
           </div>
-
+          <label
+            htmlFor="anonymousToggle"
+            className="text-xs lg:text-base font-normal text-gray-700"
+          >
+            Post Anonymously
+          </label>
+          <div
+            className={`relative inline-block w-12 h-6 cursor-pointer ${
+              isAnonymous ? "bg-blk1" : "bg-gray-300"
+            } rounded-full transition-colors duration-300`}
+            onClick={handleAnonymousToggle}
+          >
+            <span
+              className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow-md transform transition-transform duration-300 ${
+                isAnonymous ? "translate-x-6" : "translate-x-0"
+              }`}
+            ></span>
+          </div>
+        </div>
+        <div className="relative flex items-center justify-between gap-4">
           <button
             onClick={handlePost}
             disabled={loading || !inputText.trim()}
-            className={`flex text-xs lg:text-base items-center justify-center w-40 px-12 py-3 rounded-2xl transition-color duration-300 ${
+            className={`flex text-xs lg:text-base items-center justify-center min-w-full px-12 py-3 rounded-2xl transition-color duration-300 ${
               loading || !inputText.trim()
                 ? "bg-gray-200 cursor-not-allowed"
                 : "bg-blk1 text-white hover:bg-blk2"

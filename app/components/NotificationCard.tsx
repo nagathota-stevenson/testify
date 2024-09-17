@@ -32,7 +32,6 @@ const NotificationCard: React.FC<NotificationCardProps> = ({
 }) => {
   const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
   const [requestText, setRequestText] = useState<string>("");
- 
 
   useEffect(() => {
     const fetchUserDetails = async () => {
@@ -95,12 +94,11 @@ const NotificationCard: React.FC<NotificationCardProps> = ({
 
   const textColor = type === "requests" ? "text-purp" : "text-coral";
 
-
   return (
     <div
       className={`bg-white w-[400px] md:w-[400px] lg:w-[600px] p-4 border-2 border-blk1 rounded-2xl flex items-center ${cardShadow} mb-8 hover:scale-[1.05] duration-300 transition-transform:ease`}
     >
-      {userDetails?.img && (
+      {userDetails?.img ? (
         <Image
           src={userDetails.img}
           width={64}
@@ -108,20 +106,32 @@ const NotificationCard: React.FC<NotificationCardProps> = ({
           className="rounded-full aspect-square object-cover"
           alt="User Image"
         />
+      ) : (
+        <div className="rounded-full w-28 flex items-center justify-center">
+          <span className="text-gray-200 text-sm">#</span>
+        </div>
       )}
+
       <div className="flex flex-col">
         <h3 className="text-blk1 text-wrap text-xs lg:text-base line-clamp-2 ml-2 mr-2">
-          <span className={`${textColor}`}>{userDetails?.displayName}</span>
+          <span className={`${textColor}`}>
+            {userDetails?.displayName || "Unknown"} {/* Placeholder for name */}
+          </span>
           {type === "requests"
             ? " has prayed for you."
             : " has praised God for you."}
         </h3>
         <h5 className="text-gray-400 text-[10px] lg:text-xs text-wrap line-clamp-2 ml-2 mr-2">
-          {requestText}
+          {requestText || "No additional text available."}{" "}
+          {/* Placeholder for requestText */}
         </h5>
       </div>
+
       <h4 className="text-gray-400 text-xs lg:text-base ml-auto mr-2">
-        {formatTimeDifference(notificationTimestamp, now)}
+        {notificationTimestamp
+          ? formatTimeDifference(notificationTimestamp, now)
+          : "Unknown Time"}{" "}
+        {/* Placeholder for time */}
       </h4>
     </div>
   );

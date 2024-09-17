@@ -1,7 +1,6 @@
 section {
     display: flex;
     align-items: start;
-    /* Align items at the start to accommodate varying heights */
     justify-content: center;
 }
 

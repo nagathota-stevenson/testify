@@ -20,6 +20,7 @@ import {
   getDoc,
 } from "firebase/firestore";
 import { db } from "@/app/firebase/config";
+import { PROFILE_IMG } from "../constants";
 
 type Prayer = {
   uid: string;
@@ -185,7 +186,7 @@ const Card = ({
               </div>
             ) : (
               <Image
-                src={userImage}
+                src={userImage ? userImage : PROFILE_IMG}
                 alt="User DP"
                 layout="fill"
                 objectFit="cover"

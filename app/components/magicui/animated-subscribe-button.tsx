@@ -38,7 +38,7 @@ export const AnimatedSubscribeButton: React.FC<AnimatedSubscribeButtonProps> = (
       {isSubscribed ? (
         <motion.button
           key="subscribed"
-          className="relative flex w-[150px] items-center justify-center overflow-hidden rounded-2xl bg-white p-[10px] outline outline-2 outline-black"
+          className="relative flex w-[150px] items-center justify-center overflow-hidden rounded-2xl bg-white p-[10px] outline outline-2 outline-blk1"
           onClick={handleClick} // Call the handler to unsubscribe
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -57,7 +57,7 @@ export const AnimatedSubscribeButton: React.FC<AnimatedSubscribeButtonProps> = (
       ) : (
         <motion.button
           key="not-subscribed"
-          className="relative flex w-[150px] items-center justify-center overflow-hidden rounded-2xl bg-white p-[10px] outline outline-2 outline-black"
+          className="relative flex w-[150px] items-center justify-center overflow-hidden rounded-2xl bg-white p-[10px] outline outline-2 outline-blk1"
           style={{ backgroundColor: buttonColor, color: buttonTextColor }}
           onClick={handleClick} 
           initial={{ opacity: 0 }}

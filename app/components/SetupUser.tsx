@@ -18,6 +18,7 @@ import _ from "lodash";
 import { motion } from "framer-motion";
 import { useRouter, usePathname } from "next/navigation";
 
+
 const SetupUser = () => {
   const [displayName, setDisplayName] = useState("");
   const [userID, setUserID] = useState("");
@@ -145,7 +146,7 @@ const SetupUser = () => {
 
   return (
     <motion.div
-      className="login-card bg-white lg:w-[500px] sm:w-[400px] rounded-2xl border-2 self-center text-xs lg:text-base  border-blk1 flex flex-col p-8"
+      className="shadow-custom-purple bg-white lg:w-[500px] sm:w-[400px] rounded-2xl border-2 self-center text-xs lg:text-base  border-blk1 flex flex-col p-8"
       initial={{ scale: 0.5, opacity: 0 }}
       animate={{ scale: 1, opacity: 1, originY: 0 }}
       exit={{ scale: 0, opacity: 0 }}

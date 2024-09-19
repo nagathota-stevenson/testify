@@ -142,7 +142,7 @@ const Card = ({
 
   return (
     <div
-      className={`bg-white rounded-2xl border-solid border-2 border-blk1 flex flex-col p-4 h-[350px]  
+      className={`bg-white rounded-2xl border-solid border-2 border-blk1 flex flex-col p-4   
           ${type === "req" ? "card" : "card-testimony"}`}
     >
       <AnimatePresence>

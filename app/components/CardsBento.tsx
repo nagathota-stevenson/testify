@@ -15,6 +15,7 @@ import {
 import { AuthContext } from "@/app/context/AuthContext";
 import Card from "../components/Card";
 import { AnimatePresence, motion } from "framer-motion";
+import { Masonry } from "react-plock"
 
 const GridCard: React.FC<{
   data: Request & User;
@@ -32,7 +33,7 @@ const GridCard: React.FC<{
     animate={{ scale: 1, opacity: 1, originY: 0 }}
     exit={{ scale: 0, opacity: 0 }}
     transition={{ type: "spring", stiffness: 350, damping: 40 }}
-    className="card-item"
+    className="p-[4px]"
   >
     <Card
       userImage={data.img || "/default-user.png"}
@@ -157,7 +158,7 @@ const CardBento: React.FC<CardBentoProps> = ({
         })
       );
 
-      console.log(newItems);
+
 
       setItems((prevItems) => {
         const existingIds = new Set(prevItems.map((item) => item.id));
@@ -211,10 +212,14 @@ const CardBento: React.FC<CardBentoProps> = ({
         <p>No items found.</p>
       ) : (
         <AnimatePresence>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-8 px-4 pb-8">
-          {filteredItems
-            .filter((item) => item) 
-            .map((item) => (
+          <Masonry
+            items={items}
+            config={{
+              columns: [1, 2, 3],
+              gap: [24, 24, 24],
+              media: [640, 768, 1024],
+            }}
+            render={(item, idx) => (
               <GridCard
                 key={item.id}
                 data={item}
@@ -225,12 +230,12 @@ const CardBento: React.FC<CardBentoProps> = ({
                 isHomePage={homePage}
                 isAnonymous={item.isAnonymous}
               />
-            ))}
-        </div>
-      </AnimatePresence>
+            )}
+          />
+        </AnimatePresence>
       )}
       {hasMore &&  (
-        <div className="pagination-controls p-4">
+        <div className="pagination-controls p-8">
           <button
             onClick={() => handlePageChange(page + 1)}
             className={`border-2 rounded-2xl py-[10px] text-white transition-all duration-300  p-4 ${
@@ -247,6 +252,9 @@ const CardBento: React.FC<CardBentoProps> = ({
           </button>
         </div>
       )}
+      <div className="p-4">
+
+      </div>
     </section>
   );
 };

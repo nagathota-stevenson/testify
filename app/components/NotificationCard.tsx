@@ -4,6 +4,7 @@ import { Timestamp, doc, getDoc } from "firebase/firestore";
 import { db } from "@/app/firebase/config";
 import { formatTimeDifference } from "../constants";
 import { AuthContext } from "../context/AuthContext";
+import router, { useRouter } from "next/navigation";
 
 // Define the types for the props
 interface NotificationCardProps {
@@ -32,6 +33,7 @@ const NotificationCard: React.FC<NotificationCardProps> = ({
 }) => {
   const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
   const [requestText, setRequestText] = useState<string>("");
+  const router = useRouter();
 
   useEffect(() => {
     const fetchUserDetails = async () => {
@@ -114,8 +116,11 @@ const NotificationCard: React.FC<NotificationCardProps> = ({
 
       <div className="flex flex-col">
         <h3 className="text-blk1 text-wrap text-xs lg:text-base line-clamp-2 ml-2 mr-2">
-          <span className={`${textColor}`}>
-            {userDetails?.displayName || "Unknown"} {/* Placeholder for name */}
+          <span
+            className={`cursor-pointer ${textColor}`}
+            onClick={() => router.push(`/profile/${uid}/`)}
+          >
+            {userDetails?.displayName || "Unknown"} 
           </span>
           {type === "requests"
             ? " has prayed for you."

@@ -15,7 +15,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  console.log(GeistMono.variable);
+ 
   return (
     <html lang="en" className={`${GeistMono.className} font-light bg-blk1`}>
       <head>
